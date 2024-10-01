@@ -21,6 +21,14 @@ RUN install2.r --error --skipinstalled \
     stringr
 
 RUN install2.r --error --skipinstalled \
+    maps \
+    mapdata \
+    mapplots \
+    ggthemes \
+    ggnewscale \
+    sf
+
+RUN install2.r --error --skipinstalled \
     dplyr
 
 # Sets the working directory to the shiny-server root folder
