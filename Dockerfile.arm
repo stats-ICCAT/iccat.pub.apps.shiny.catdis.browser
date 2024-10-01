@@ -24,7 +24,7 @@ RUN R -e "install.packages(c('bslib', 'cachem', 'colorspace', 'commonmark', 'cra
 
 RUN R -e "install.packages(c('scatterpie', 'htmltools', 'stringr'), repos = 'http://cran.r-project.org')"
 
-RUN R -e "install.packages(c('maps', 'mapdata', 'mapplots', 'ggthemes', 'ggnewscale', 'sf'), repos = 'http://cran.r-project.org')"
+RUN R -e "install.packages(c('maps', 'mapdata', 'mapplots', 'ggthemes', 'ggnewscale', 'units', 'sf'), repos = 'http://cran.r-project.org')"
 
 # Sets the working directory to the shiny-server root folder
 WORKDIR /srv/shiny-server

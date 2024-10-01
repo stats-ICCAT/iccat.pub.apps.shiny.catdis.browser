@@ -26,6 +26,7 @@ RUN install2.r --error --skipinstalled \
     mapplots \
     ggthemes \
     ggnewscale \
+    units \
     sf
 
 RUN install2.r --error --skipinstalled \
