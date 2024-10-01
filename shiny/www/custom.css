@@ -1,0 +1,94 @@
+/* DATA */
+
+#filtered_data_container .dataTables_scrollBody table {
+  float: left;
+}
+
+#filtered_data_container {
+  font-size: x-small;
+  padding-top: 1em;
+}
+
+#filtered_data_container table thead tr th,
+#filtered_data_container table tbody tr td {
+  padding-top:    2px !important;
+  padding-bottom: 1px !important;
+  line-height:    1em;
+}
+
+/* Default cell width + alignment */
+#filtered_data_container table thead tr th,
+#filtered_data_container table tbody tr td {
+  min-width:  10px;
+  width:      45px;
+  text-align: center;
+}
+
+#filtered_data_container table thead tr th:nth-child(2),
+#filtered_data_container table thead tr th:nth-child(3),
+#filtered_data_container table tbody tr td:nth-child(2),
+#filtered_data_container table tbody tr td:nth-child(3) {
+  width:      125px;
+  text-align: left !important;
+}
+
+#filtered_data_container table thead tr th:nth-child(4),
+#filtered_data_container table thead tr th:nth-child(5),
+#filtered_data_container table thead tr th:nth-child(8) {
+  width: 70px;
+}
+
+#filtered_data_container table thead tr th:nth-child(10),
+#filtered_data_container table tbody tr td:nth-child(10) {
+  text-align: right;
+}
+
+/* LAYOUT ETC. */
+
+.nav-tabs li {
+    min-width: 128px;
+    text-align: center;
+}
+
+.dataTables_paginate {
+  float: left !important;
+  margin-left: calc(20vw - 2em);
+}
+
+#glasspane {
+	position: fixed;
+
+	height: 100%;
+	width: 100%;
+
+	background-color: #99999933;
+
+	z-index: 10000;
+}
+
+.loading {
+	width: 320px;
+
+	color: black;
+	background-color: white;
+
+	font-weight: bold;
+	font-size: 100%;
+
+	padding: 1em;
+	margin-left: calc(50vw - 160px);
+	margin-top: calc(40vh);
+
+	text-align: center;
+
+	border-radius: 1em;
+	border: 2px solid gray;
+
+	-webkit-box-shadow: -1px 10px 25px -11px rgba(0,0,0,0.75);
+	-moz-box-shadow:    -1px 10px 25px -11px rgba(0,0,0,0.75);
+	box-shadow:         -1px 10px 25px -11px rgba(0,0,0,0.75);
+ }
+
+.vscomp-dropbox-container  {
+  z-index:99999 !important;
+}
