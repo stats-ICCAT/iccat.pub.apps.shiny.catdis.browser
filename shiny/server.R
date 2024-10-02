@@ -283,7 +283,7 @@ server = function(input, output, session) {
 
         guides(
           fill = guide_legend(
-            title = paste0(label, " (", label_unit, ")"),
+            title = paste0(label, " [ ", label_unit, " ]"),
             position = "right"
           )
         ) +

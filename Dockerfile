@@ -2,6 +2,12 @@ FROM rocker/shiny:latest
 
 WORKDIR /
 
+RUN apt-get update -qq
+RUN apt-get -y -f install \
+    libudunits2-dev \
+    libproj-dev \
+    libgdal-dev
+
 # Installs all required R packages (and their dependencies) starting from those hat are available on the remote repo
 # and then from the locally available libs (for the time being)
 RUN install2.r --error --skipinstalled \
@@ -50,6 +56,8 @@ ENV GITLAB_AUTH_TOKEN=$GITLAB_AUTH_TOKEN
 COPY ./shiny interactive_catdis_browser
 
 # Updates the R libs
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
+
 RUN Rscript update_libs.R
 
 # Sets the Shiny log level to 'TRACE', stores the environment variable in .Renviron and copies that file under the 'shiny' user folder

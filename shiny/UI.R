@@ -106,7 +106,9 @@ ui = function() {
               width = 10,
               tabsetPanel(
                 id = "output",
-                tabPanel(TAB_PIEMAP,
+                tabPanel(
+                  TAB_PIEMAP,
+                  icon = icon("chart-pie"),
                   div(style = "padding-top: .5em",
                     fluidRow(
                       column(
@@ -154,8 +156,8 @@ ui = function() {
                                         choices = c("Calculated", "Fixed")
                             ),
                             conditionalPanel(
-                              condition = "input.catchType == 'Fixed'",
-                              sliderInput("catch", "Reference catch (log10(t))",
+                              condition = "input.catchScale == 'Fixed'",
+                              sliderInput("catch", "Reference catch [ log10(t) ]",
                                           width = "100%",
                                           min = 3, max = 6,
                                           value = 5,
@@ -173,7 +175,9 @@ ui = function() {
                     )
                   )
                 ),
-                tabPanel(TAB_HEATMAP,
+                tabPanel(
+                  TAB_HEATMAP,
+                  icon = icon("th"),
                   div(style = "padding-top: .5em",
                     fluidRow(
                       column(
@@ -210,7 +214,9 @@ ui = function() {
                     )
                   )
                 ),
-                tabPanel(TAB_RAW_DATA,
+                tabPanel(
+                  TAB_RAW_DATA,
+                  icon = icon("list-alt"),
                   fluidRow(
                     column(
                       width = 12,
