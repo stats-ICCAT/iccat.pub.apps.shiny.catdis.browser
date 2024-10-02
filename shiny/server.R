@@ -443,9 +443,9 @@ server = function(input, output, session) {
       output = input$output
 
       if(output == TAB_PIEMAP)
-        ggsave(filename = file, piemap(),  width = 10, height = 8)
+        ggsave(filename = file, piemap()  + annotation_custom(grob = ICCAT_LOGO_RASTER), width = 10, height = 8)
       else if(output == TAB_HEATMAP)
-        ggsave(filename = file, heatmap(), width = 10, height = 8)
+        ggsave(filename = file, heatmap() + annotation_custom(grob = ICCAT_LOGO_RASTER), width = 10, height = 8)
       else
         write.csv(filter_catdis_data(), gzfile(file), row.names = FALSE, na = "")
     }

@@ -15,19 +15,24 @@ library(htmltools)
 
 library(stringr)
 
+### INITIALIZATION
+
 options(scipen = 9999)
 
 # THIS IS ***FUNDAMENTAL*** TO HAVE THE DOCKER CONTAINER CORRECTLY LOAD THE .RData FILE WITH THE ORIGINAL UTF-8 ENCODING
 Sys.setlocale(category = "LC_ALL", locale = "en_US.UTF-8")
 
-TAB_PIEMAP   = "Piemap"
-TAB_HEATMAP  = "Heatmap"
-TAB_RAW_DATA = "Tabular data"
-
-INITIAL_NUM_ENTRIES  = 50
+set_log_level(LOG_INFO)
 
 load("./META.RData")
 load("./CATDIS_Y.RData")
+
+MIN_YEAR = 1950 #min(CA_ALL$Year)
+MAX_YEAR = max(CATDIS_Y$YEAR)
+
+INFO(paste0(nrow(CATDIS_Y), " rows loaded from CATDIS_Y"))
+
+### BUILDING REFERENCE DATA FOR UI COMPONENTS
 
 CATDIS_flags       = REF_FLAGS[NAME_EN %in% unique(CATDIS_Y$FLAG)]
 CATDIS_fleets      = REF_FLEETS[CODE %in% unique(CATDIS_Y$FLEET)]
@@ -60,6 +65,11 @@ ALL_SPECIES        = setNames(ALL_SPECIES_DATA$CODE, paste0(ALL_SPECIES_DATA$COD
 ALL_STOCKS         = sort(unique(CATDIS_Y$STOCK))
 ALL_SAMPLING_AREAS = sort(unique(CATDIS_Y$SAMPLING_AREA))
 
+PIEMAP_CATEGORIES = setNames(c("Gear group", "Species"),
+                             c("GearGroup", "Species"))
+
+### BUILDING CUSTOM REFERENCE COLORS
+
 SPECIES_COLORS =
   data.table(
     SPECIES = ALL_SPECIES_CODES,
@@ -72,11 +82,17 @@ SCHOOL_TYPE_COLORS =
     FILL        = c("yellow", "red", "gray")
   )
 
-GRIDS_SF = geometries_for(GRIDS_5x5_RAW_GEOMETRIES)
-
-PIEMAP_CATEGORIES = setNames(c("Gear group", "Species"), c("GearGroup", "Species"))
+### UI COMPONENTS CONFIGURATION
 
 DEFAULT_RADIUS = pi
+
+TAB_PIEMAP   = "Piemap"
+TAB_HEATMAP  = "Heatmap"
+TAB_RAW_DATA = "Tabular data"
+
+INITIAL_NUM_ENTRIES  = 50
+
+GRIDS_SF = geometries_for(GRIDS_5x5_RAW_GEOMETRIES)
 
 UI_select_input = function(id, label, placeholder = "Select", choices) {
   return(
@@ -95,9 +111,12 @@ UI_select_input = function(id, label, placeholder = "Select", choices) {
   )
 }
 
-set_log_level(LOG_INFO)
+### ICCAT LOGO
 
-MIN_YEAR = 1950 #min(CA_ALL$Year)
-MAX_YEAR = max(CATDIS_Y$YEAR)
-
-INFO(paste0(nrow(CATDIS_Y), " rows loaded from CATDIS_Y"))
+ICCAT_LOGO = png::readPNG("./www/iccat-logo.png")
+ICCAT_LOGO_RASTER = grid::rasterGrob(ICCAT_LOGO, interpolate = TRUE,
+                                     #width = unit(75, "points"),
+                                     width = unit(0.07, "npc"),
+                                     #x = unit(.09, "npc"), y = unit(.98, "npc"),
+                                     x = unit(0.08, "npc"), y = unit(.98, "npc"),
+                                     hjust = -9, vjust = 12.4)
