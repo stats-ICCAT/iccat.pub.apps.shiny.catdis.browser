@@ -32,6 +32,9 @@ RUN install2.r --error --skipinstalled \
 RUN install2.r --error --skipinstalled \
     dplyr
 
+RUN install2.r --error --skipinstalled \
+    cowplot
+
 # Sets the working directory to the shiny-server root folder
 WORKDIR /srv/shiny-server
 
