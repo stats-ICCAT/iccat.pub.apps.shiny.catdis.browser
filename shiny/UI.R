@@ -150,7 +150,7 @@ ui = function() {
                         fluidRow(
                           column(
                             width = 12,
-                            selectInput("catchType", label = "Reference catch type",
+                            selectInput("catchScale", label = "Reference catch scale",
                                         choices = c("Calculated", "Fixed")
                             ),
                             conditionalPanel(

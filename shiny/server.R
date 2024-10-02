@@ -156,7 +156,7 @@ server = function(input, output, session) {
 
     CATDIS_data_w[, RADIUS     := rowSums(CATDIS_data_w[, 3:ncol(CATDIS_data_w)])]
 
-    max_radius = ifelse(input$catchType == "Fixed", 10^input$catch, max(CATDIS_data_w$RADIUS))
+    max_radius = ifelse(input$catchScale == "Fixed", 10^input$catch, max(CATDIS_data_w$RADIUS))
 
     #CATDIS_data_w[, RADIUS_REL := input$radius * sqrt(RADIUS / max(RADIUS))]
     CATDIS_data_w[, RADIUS_REL := input$radius * sqrt(RADIUS / max_radius)]
