@@ -10,15 +10,15 @@ RUN apt-get -y install apt-utils
 
 # Required to build R package dependencies
 
-RUN apt-get -y install libharfbuzz-dev \
-                       libfreetype6-dev \
-                       libfribidi-dev \
-                       libgdal-dev \
-                       libgit2-dev \
-                       libjpeg-dev \
-                       libpng-dev \
-                       libtiff5-dev \
-                       libudunits2-dev
+RUN apt-get -y install libharfbuzz-dev
+RUN apt-get -y install libfreetype6-dev
+RUN apt-get -y install libfribidi-dev
+RUN apt-get -y install libgdal-dev
+RUN apt-get -y install libgit2-dev
+RUN apt-get -y install libjpeg-dev
+RUN apt-get -y install libpng-dev
+RUN apt-get -y install libtiff5-dev
+RUN apt-get -y install libudunits2-dev
 
 WORKDIR /
 
