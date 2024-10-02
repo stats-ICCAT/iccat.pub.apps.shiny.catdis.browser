@@ -7,6 +7,7 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 
 RUN apt-get update
 RUN apt-get -y install apt-utils
+RUN apt-get upgrade
 
 # Required to build R package dependencies
 
