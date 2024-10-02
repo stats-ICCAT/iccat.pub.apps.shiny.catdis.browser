@@ -78,11 +78,12 @@ PIEMAP_CATEGORIES = setNames(c("Gear group", "Species"), c("GearGroup", "Species
 
 DEFAULT_RADIUS = pi
 
-UI_select_input = function(id, label, choices) {
+UI_select_input = function(id, label, placeholder = "Select", choices) {
   return(
     virtualSelectInput(
       inputId = id,
       label = label,
+      placeholder = placeholder,
       width = "100%",
       multiple = TRUE,
       autoSelectFirstOption = FALSE,

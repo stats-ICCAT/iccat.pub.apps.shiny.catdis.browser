@@ -38,8 +38,8 @@
   width: 70px;
 }
 
-#filtered_data_container table thead tr th:nth-child(10),
-#filtered_data_container table tbody tr td:nth-child(10) {
+#filtered_data_container table thead tr th:nth-child(n + 10),
+#filtered_data_container table tbody tr td:nth-child(n + 10) {
   text-align: right;
 }
 

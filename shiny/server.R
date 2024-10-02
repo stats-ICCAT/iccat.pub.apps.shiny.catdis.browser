@@ -118,9 +118,9 @@ server = function(input, output, session) {
 
     colnames(CATDIS_data)[which(colnames(CATDIS_data) == category)] = "CATEGORY"
 
-    if     (metric == "AC")  { CATDIS_data = CATDIS_data[, .(CATCH = sum(CATCH, na.rm = TRUE)), keyby = .(GRID, CATEGORY)] }
-    else if(metric == "AV")  { CATDIS_data = CATDIS_data[, .(CATCH = sum(CATCH, na.rm = TRUE) / (input$years[2] - input$years[1] + 1)), keyby = .(GRID, CATEGORY)] }
-    else if(metric == "AVC") { CATDIS_data = CATDIS_data[, .(CATCH = sum(CATCH, na.rm = TRUE) / length(unique(YEAR))), keyby = .(GRID, CATEGORY)] }
+    if     (metric == "AC")  { CATDIS_data = CATDIS_data[, .(CATCH = sum(CATCH, na.rm = TRUE)),                                         keyby = .(GRID, GRID_LON, GRID_LAT, CATEGORY)] }
+    else if(metric == "AV")  { CATDIS_data = CATDIS_data[, .(CATCH = sum(CATCH, na.rm = TRUE) / (input$years[2] - input$years[1] + 1)), keyby = .(GRID, GRID_LON, GRID_LAT, CATEGORY)] }
+    else if(metric == "AVC") { CATDIS_data = CATDIS_data[, .(CATCH = sum(CATCH, na.rm = TRUE) / length(unique(YEAR))),                  keyby = .(GRID, GRID_LON, GRID_LAT, CATEGORY)] }
 
     all_categories = unique(CATDIS_data$CATEGORY)
 
@@ -137,14 +137,22 @@ server = function(input, output, session) {
 
     if(length(all_categories) == 1) {
       # Otherwise, for datasets with only one gear, the geom_scatterpie function will yield an error...
-      CATDIS_data = rbind(CATDIS_data, data.table(GRID = "6100000", CATEGORY = "foo", CATCH = 0))
+      CATDIS_data = rbind(CATDIS_data, data.table(GRID = "6100000", GRID_LON = 0, GRID_LAT = 0, CATEGORY = "foo", CATCH = 0))
     }
 
-    CATDIS_data =
-      merge(
-        CATDIS_data, as.data.table(GRIDS_SF)[, .(CODE, LON = CENTER_LON, LAT = CENTER_LAT)],
-        by.x = "GRID", by.y = "CODE"
-      )
+    if(input$pieCenter == "O") { # Pies should be centered in the grid ocean area (as stored in the 5x5 grid reference data)
+      CATDIS_data =
+        merge(
+          CATDIS_data, as.data.table(GRIDS_SF)[, .(CODE, LON = CENTER_LON, LAT = CENTER_LAT)],
+          by.x = "GRID", by.y = "CODE"
+        )
+    } else {                     # Pies should be centered in the theoretical grid center (as stored in the CATDIS data)
+      CATDIS_data =
+        merge(
+          CATDIS_data[, .(GRID, LON = GRID_LON, LAT = GRID_LAT, CATEGORY, CATCH)], as.data.table(GRIDS_SF)[, .(CODE)],
+          by.x = "GRID", by.y = "CODE"
+        )
+    }
 
     CATDIS_data_w =
       dcast.data.table(
@@ -161,12 +169,25 @@ server = function(input, output, session) {
     #CATDIS_data_w[, RADIUS_REL := input$radius * sqrt(RADIUS / max(RADIUS))]
     CATDIS_data_w[, RADIUS_REL := input$radius * sqrt(RADIUS / max_radius)]
 
+    if(input$radius <= 1)
+      pie_legend_breaks = c(input$radius)
+    else if(input$radius < 3)
+      pie_legend_breaks = c(0, input$radius)
+    else
+      pie_legend_breaks = c(0, input$radius / sqrt(2), input$radius)
+
     pie =
       map.atlantic() +
+        #geom_sf(
+        #  data = st_as_sf(ATLANTIC_OCEAN_RAW_GEOMETRY, crs = 4326, wkt = "GEOMETRY_WKT"),
+        #  fill = "transparent",
+        #  color = "#00000044"
+        #) +
+
         geom_sf(
-          data = st_as_sf(ATLANTIC_OCEAN_RAW_GEOMETRY, crs = 4326, wkt = "GEOMETRY_WKT"),
+          data = st_as_sf(GRIDS_5x5_RAW_GEOMETRIES, crs = 4326, wkt = "GEOMETRY_WKT"),
           fill = "transparent",
-          color = "#00000044"
+          color = "#88888822"
         ) +
 
         geom_scatterpie(
@@ -190,7 +211,7 @@ server = function(input, output, session) {
             #paste(prettyNum(round((x / input$radius) ^ 2 * max(CATDIS_data_w$RADIUS)), big.mark = ","), " t")
             paste(prettyNum(round((x / input$radius) ^ 2 * max_radius), big.mark = ","), " t")
           },
-          breaks = c(0, input$radius / sqrt(2), input$radius),
+          breaks = pie_legend_breaks,
           size = 2.5
         ) +
 
@@ -260,10 +281,16 @@ server = function(input, output, session) {
 
     heat =
       map.atlantic() +
+        #geom_sf(
+        #  data = st_as_sf(ATLANTIC_OCEAN_RAW_GEOMETRY, crs = 4326, wkt = "GEOMETRY_WKT"),
+        #  fill = "transparent",
+        #  color = "#00000044"
+        #) +
+
         geom_sf(
-          data = st_as_sf(ATLANTIC_OCEAN_RAW_GEOMETRY, crs = 4326, wkt = "GEOMETRY_WKT"),
+          data = st_as_sf(GRIDS_5x5_RAW_GEOMETRIES, crs = 4326, wkt = "GEOMETRY_WKT"),
           fill = "transparent",
-          color = "#00000044"
+          color = "#88888822"
         ) +
 
         geom_sf(
@@ -320,6 +347,21 @@ server = function(input, output, session) {
     renderDataTable({
       filtered_data = validate_filtering(filter_catdis_data())
 
+      filtered_data = filtered_data[, .(YEAR,
+                                        FLAG,
+                                        FLEET,
+                                        GEAR_GROUP,
+                                        SCHOOL_TYPE,
+                                        SPECIES,
+                                        STOCK,
+                                        SAMPLING_AREA,
+                                        GRID,
+                                        GRID_LON,
+                                        GRID_LAT,
+                                        GRID_CENTROID_LON,
+                                        GRID_CENTROID_LAT,
+                                        CATCH)]
+
       return(
         DT::datatable(
           filtered_data,
@@ -336,9 +378,12 @@ server = function(input, output, session) {
                        "Flag name", "Fleet code",
                        "Gear group", "School type",
                        "Species", "Stock",
-                       "Sampling area", "Grid",
+                       "Sampling area",
+                       "Grid",
+                       "Center lon.", "Center lat.", "Centroid lon.", "Centroid lat.",
                        "Catch (t)")
         )
+        %>% DT::formatCurrency(columns = c("GRID_LON", "GRID_LAT", "GRID_CENTROID_LON", "GRID_CENTROID_LAT"), currency = "")
         %>% DT::formatCurrency(columns = c("CATCH"), currency = "")
       )
     })

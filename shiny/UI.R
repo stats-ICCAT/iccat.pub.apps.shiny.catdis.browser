@@ -32,7 +32,7 @@ ui = function() {
               fluidRow(
                 column(
                   width = 12,
-                  sliderInput("years", "Year range",
+                  sliderInput("years", "Year range:",
                               width = "100%",
                               min = MIN_YEAR, max = MAX_YEAR,
                               value = c(max(MIN_YEAR, MAX_YEAR - 30 + 1), MAX_YEAR),
@@ -44,43 +44,43 @@ ui = function() {
               fluidRow(
                 column(
                   width = 12,
-                  UI_select_input("species", "Species", ALL_SPECIES)
+                  UI_select_input("species", "Species:", "All species", ALL_SPECIES)
                 )
               ),
               fluidRow(
                 column(
                   width = 12,
-                  UI_select_input("stocks", "Stock(s)", ALL_STOCKS)
+                  UI_select_input("stocks", "Stock(s):", "All stocks", ALL_STOCKS)
                 )
               ),
               fluidRow(
                 column(
                   width = 12,
-                  UI_select_input("flags", "Flag(s)", ALL_FLAGS)
+                  UI_select_input("flags", "Flag(s):", "All flags", ALL_FLAGS)
                 )
               ),
               fluidRow(
                 column(
                   width = 12,
-                  UI_select_input("fleets", "Fleet(s)", ALL_FLEETS)
+                  UI_select_input("fleets", "Fleet(s):", "All fleets", ALL_FLEETS)
                 )
               ),
               fluidRow(
                 column(
                   width = 12,
-                  UI_select_input("gearGroups", "Gear group(s)", ALL_GEAR_GROUPS)
+                  UI_select_input("gearGroups", "Gear group(s):", "All gear groups", ALL_GEAR_GROUPS)
                 )
               ),
               fluidRow(
                 column(
                   width = 12,
-                  UI_select_input("schoolTypes", "School type(s)", ALL_FISHING_MODES)
+                  UI_select_input("schoolTypes", "School type(s):", "All school types", ALL_FISHING_MODES)
                 )
               ),
               fluidRow(
                 column(
                   width = 12,
-                  UI_select_input("samplingAreas", "Sampling area(s)", ALL_SAMPLING_AREAS)
+                  UI_select_input("samplingAreas", "Sampling area(s):", "All sampling areas", ALL_SAMPLING_AREAS)
                 )
               ),
               fluidRow(
@@ -133,6 +133,19 @@ ui = function() {
                                           setNames(
                                             c("AC",           "AV",             "AVC"),
                                             c("Accumulation", "Annual average", "Annual average (corrected)")
+                                          )
+                            )
+                          )
+                        ),
+                        fluidRow(
+                          column(
+                            width = 12,
+                            selectInput("pieCenter", label = "Pie position:",
+                                        selected = "O",
+                                        choices =
+                                          setNames(
+                                            c("G",           "O"),
+                                            c("Grid center", "Grid centroid")
                                           )
                             )
                           )

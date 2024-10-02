@@ -25,6 +25,12 @@ CATDIS$SchoolType =
     ordered = TRUE
   )
 
+CATDIS =
+  merge(
+    CATDIS, GRIDS_5x5_RAW_GEOMETRIES[, .(CODE, GRID_CENTROID_LON = CENTER_LON, GRID_CENTROID_LAT = CENTER_LAT)],
+    by.x = "CWPCode", by.y = "CODE"
+  )
+
 CATDIS_Q =
   CATDIS[, .(YEAR = YearC,
              QUARTER = Trimester,
@@ -36,6 +42,10 @@ CATDIS_Q =
              STOCK = Stock,
              SAMPLING_AREA = SampAreaCode,
              GRID = CWPCode,
+             GRID_LON = xLon5ctoid,
+             GRID_LAT = yLat5ctoid,
+             GRID_CENTROID_LON,
+             GRID_CENTROID_LAT,
              CATCH = round(Catch_t, 2))]
 
 CATDIS_Y =
@@ -48,7 +58,11 @@ CATDIS_Y =
                      SPECIES,
                      STOCK,
                      SAMPLING_AREA,
-                     GRID)]
+                     GRID,
+                     GRID_LON,
+                     GRID_LAT,
+                     GRID_CENTROID_LON,
+                     GRID_CENTROID_LAT)]
 
 META = list(LAST_UPDATE = "2024-09-30",
             FILENAME_Y = "ICCAT_CATDIS_20240930_Y.csv.gz",
