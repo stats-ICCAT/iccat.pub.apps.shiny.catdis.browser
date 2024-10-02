@@ -31,6 +31,8 @@ RUN R -e "install.packages(c('bslib', 'cachem', 'colorspace', 'commonmark', 'cow
                              'shiny', 'shinycssloaders', 'shinyjs', 'shinyWidgets', 'sourcetools', 'stringi', \
                              'stringr', 'stringr', 'units'), repos = 'http://cran.r-project.org')"
 
+RUN R -e "install.packages(c('png'), repos = 'http://cran.r-project.org')"
+
 # Sets the working directory to the shiny-server root folder
 WORKDIR /srv/shiny-server
 
