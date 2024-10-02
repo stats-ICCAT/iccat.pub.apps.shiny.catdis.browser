@@ -203,7 +203,9 @@ server = function(input, output, session) {
 
         theme(
           legend.justification = "top",
-          legend.margin = margin(t = 1, unit = "cm")
+          legend.margin = margin(t = 1, unit = "cm"),
+          legend.title  = element_text(size = 9),
+          legend.text   = element_text(size = 9)
         )
 
     pie_legend = get_legend(pie)
@@ -290,7 +292,9 @@ server = function(input, output, session) {
 
         theme(
           legend.justification = "top",
-          legend.margin = margin(t = 1, unit = "cm")
+          legend.margin = margin(t = 1, unit = "cm"),
+          legend.title  = element_text(size = 9),
+          legend.text   = element_text(size = 9)
         )
 
     heat_legend = get_legend(heat)
