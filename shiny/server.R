@@ -155,9 +155,13 @@ server = function(input, output, session) {
       )
 
     CATDIS_data_w[, RADIUS     := rowSums(CATDIS_data_w[, 3:ncol(CATDIS_data_w)])]
-    CATDIS_data_w[, RADIUS_REL := input$radius * sqrt(RADIUS / max(RADIUS))]
 
-    return(
+    max_radius = ifelse(input$catchType == "Fixed", 10^input$catch, max(CATDIS_data_w$RADIUS))
+
+    #CATDIS_data_w[, RADIUS_REL := input$radius * sqrt(RADIUS / max(RADIUS))]
+    CATDIS_data_w[, RADIUS_REL := input$radius * sqrt(RADIUS / max_radius)]
+
+    pie =
       map.atlantic() +
         geom_sf(
           data = st_as_sf(ATLANTIC_OCEAN_RAW_GEOMETRY, crs = 4326, wkt = "GEOMETRY_WKT"),
@@ -183,7 +187,8 @@ server = function(input, output, session) {
           x = -90,
           y = -25,
           labeller = function(x) {
-            paste(prettyNum(round((x / input$radius) ^ 2 * max(CATDIS_data_w$RADIUS)), big.mark = ","), " t")
+            #paste(prettyNum(round((x / input$radius) ^ 2 * max(CATDIS_data_w$RADIUS)), big.mark = ","), " t")
+            paste(prettyNum(round((x / input$radius) ^ 2 * max_radius), big.mark = ","), " t")
           },
           breaks = c(0, input$radius / sqrt(2), input$radius),
           size = 2.5
@@ -194,7 +199,24 @@ server = function(input, output, session) {
           fill = guide_legend(
             position = "right"
           )
+        ) +
+
+        theme(
+          legend.justification = "top",
+          legend.margin = margin(t = 1, unit = "cm")
         )
+
+    pie_legend = get_legend(pie)
+
+    pie = pie + theme(legend.position = "none")
+
+    return(
+      plot_grid(
+        pie, pie_legend,
+        rel_widths = c(5, 1.3)
+      ) +
+
+      theme(plot.background = element_rect(fill = "white", colour = NA))
     )
   }
 
@@ -234,7 +256,7 @@ server = function(input, output, session) {
         by.x = "GRID", by.y = "CODE"
       )
 
-    return(
+    heat =
       map.atlantic() +
         geom_sf(
           data = st_as_sf(ATLANTIC_OCEAN_RAW_GEOMETRY, crs = 4326, wkt = "GEOMETRY_WKT"),
@@ -262,10 +284,26 @@ server = function(input, output, session) {
         guides(
           fill = guide_legend(
             title = paste0(label, " (", label_unit, ")"),
-            position = "bottom",
-            nrow = 1
+            position = "right"
           )
+        ) +
+
+        theme(
+          legend.justification = "top",
+          legend.margin = margin(t = 1, unit = "cm")
         )
+
+    heat_legend = get_legend(heat)
+
+    heat = heat + theme(legend.position = "none")
+
+    return(
+      plot_grid(
+        heat, heat_legend,
+        rel_widths = c(5, 1.3)
+      ) +
+
+      theme(plot.background = element_rect(fill = "white", colour = NA))
     )
   }
 
@@ -356,9 +394,9 @@ server = function(input, output, session) {
       output = input$output
 
       if(output == TAB_PIEMAP)
-        ggsave(filename = file, piemap(), width = 13, height = 12)
+        ggsave(filename = file, piemap(),  width = 10, height = 8)
       else if(output == TAB_HEATMAP)
-        ggsave(filename = file, heatmap(), width = 13, height = 12)
+        ggsave(filename = file, heatmap(), width = 10, height = 8)
       else
         write.csv(filter_catdis_data(), gzfile(file), row.names = FALSE, na = "")
     }

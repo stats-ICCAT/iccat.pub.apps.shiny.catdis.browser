@@ -44,48 +44,43 @@ ui = function() {
               fluidRow(
                 column(
                   width = 12,
-                  fluidRow(
-                    column(
-                      width = 12,
-                      UI_select_input("species", "Species", ALL_SPECIES)
-                    )
-                  ),
-                  fluidRow(
-                    column(
-                      width = 12,
-                      UI_select_input("stocks", "Stock(s)", ALL_STOCKS)
-                    )
-                  ),
-                  fluidRow(
-                    column(
-                      width = 12,
-                      UI_select_input("flags", "Flag(s)", ALL_FLAGS)
-                    )
-                  ),
-                  fluidRow(
-                    column(
-                      width = 12,
-                      UI_select_input("fleets", "Fleet(s)", ALL_FLEETS)
-                    )
-                  ),
-                  fluidRow(
-                    column(
-                      width = 12,
-                      UI_select_input("gearGroups", "Gear group(s)", ALL_GEAR_GROUPS)
-                    )
-                  ),
-                  fluidRow(
-                    column(
-                      width = 12,
-                      UI_select_input("schoolTypes", "School type(s)", ALL_FISHING_MODES)
-                    )
-                  ),
-                  fluidRow(
-                    column(
-                      width = 12,
-                      UI_select_input("samplingAreas", "Sampling area(s)", ALL_SAMPLING_AREAS)
-                    )
-                  )
+                  UI_select_input("species", "Species", ALL_SPECIES)
+                )
+              ),
+              fluidRow(
+                column(
+                  width = 12,
+                  UI_select_input("stocks", "Stock(s)", ALL_STOCKS)
+                )
+              ),
+              fluidRow(
+                column(
+                  width = 12,
+                  UI_select_input("flags", "Flag(s)", ALL_FLAGS)
+                )
+              ),
+              fluidRow(
+                column(
+                  width = 12,
+                  UI_select_input("fleets", "Fleet(s)", ALL_FLEETS)
+                )
+              ),
+              fluidRow(
+                column(
+                  width = 12,
+                  UI_select_input("gearGroups", "Gear group(s)", ALL_GEAR_GROUPS)
+                )
+              ),
+              fluidRow(
+                column(
+                  width = 12,
+                  UI_select_input("schoolTypes", "School type(s)", ALL_FISHING_MODES)
+                )
+              ),
+              fluidRow(
+                column(
+                  width = 12,
+                  UI_select_input("samplingAreas", "Sampling area(s)", ALL_SAMPLING_AREAS)
                 )
               ),
               fluidRow(
@@ -108,17 +103,17 @@ ui = function() {
               )
             ),
             column(
-              width = 8,
+              width = 10,
               tabsetPanel(
                 id = "output",
                 tabPanel(TAB_PIEMAP,
                   div(style = "padding-top: .5em",
                     fluidRow(
                       column(
-                        width = 12,
+                        width = 2,
                         fluidRow(
                           column(
-                            width = 3,
+                            width = 12,
                             selectInput("piemapCategory", label = "Categorise by:",
                                         choices =
                                           setNames(
@@ -126,9 +121,11 @@ ui = function() {
                                             c("Gear group", "Species", "School type")
                                           )
                             )
-                          ),
+                          )
+                        ),
+                        fluidRow(
                           column(
-                            width = 3,
+                            width = 12,
                             selectInput("metricPie", label = "Metric:",
                                         choices =
                                           setNames(
@@ -140,14 +137,8 @@ ui = function() {
                         ),
                         fluidRow(
                           column(
-                            width = 8,
-                            plotOutput("piemap", height = "700px")
-                          )
-                        ),
-                        fluidRow(
-                          column(
-                            width = 3,
-                            sliderInput("radius", "Max. radius",
+                            width = 12,
+                            sliderInput("radius", "Maximum pie radius (units)",
                                         width = "100%",
                                         min = 0.5, max = 5,
                                         value = 3,
@@ -155,7 +146,29 @@ ui = function() {
                                         step  = .1
                             )
                           )
+                        ),
+                        fluidRow(
+                          column(
+                            width = 12,
+                            selectInput("catchType", label = "Reference catch type",
+                                        choices = c("Calculated", "Fixed")
+                            ),
+                            conditionalPanel(
+                              condition = "input.catchType == 'Fixed'",
+                              sliderInput("catch", "Reference catch (log10(t))",
+                                          width = "100%",
+                                          min = 3, max = 6,
+                                          value = 5,
+                                          sep = "",
+                                          step  = .1
+                              )
+                            )
+                          )
                         )
+                      ),
+                      column(
+                        width = 10,
+                        plotOutput("piemap", width = "1000px", height = "800px")
                       )
                     )
                   )
@@ -164,10 +177,10 @@ ui = function() {
                   div(style = "padding-top: .5em",
                     fluidRow(
                       column(
-                        width = 12,
+                        width = 2,
                         fluidRow(
                           column(
-                            width = 3,
+                            width = 12,
                             selectInput("scale", label = "Scale:",
                                         choices =
                                           setNames(
@@ -176,8 +189,10 @@ ui = function() {
                                           )
                             )
                           ),
+                        ),
+                        fluidRow(
                           column(
-                            width = 3,
+                            width = 12,
                             selectInput("metricHeat", label = "Metric:",
                                         choices =
                                           setNames(
@@ -186,13 +201,11 @@ ui = function() {
                                           )
                             )
                           )
-                        ),
-                        fluidRow(
-                          column(
-                            width = 7,
-                            plotOutput("heatmap", height = "800px")
-                          )
                         )
+                      ),
+                      column(
+                        width = 10,
+                        plotOutput("heatmap", width = "1000px", height = "800px")
                       )
                     )
                   )

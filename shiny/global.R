@@ -4,6 +4,7 @@ library(iccat.pub.maps)
 library(iccat.pub.aes)
 
 library(scatterpie)
+library(cowplot)
 
 library(shiny)
 library(shinyjs)
