@@ -11,15 +11,15 @@ RUN apt-get upgrade
 
 # Required to build R package dependencies
 
-RUN apt-get -y install libharfbuzz-dev
-RUN apt-get -y install libfreetype-dev
-RUN apt-get -y install libfribidi-dev
-RUN apt-get -y install libgdal-dev
-RUN apt-get -y install libgit2-dev
-RUN apt-get -y install libjpeg-dev
-RUN apt-get -y install libpng-dev
-RUN apt-get -y install libtiff5-dev
-RUN apt-get -y install libudunits2-dev
+RUN apt-get -y -f install libharfbuzz-dev
+RUN apt-get -y -f install libfreetype-dev
+RUN apt-get -y -f install libfribidi-dev
+RUN apt-get -y -f install libgdal-dev
+RUN apt-get -y -f install libgit2-dev
+RUN apt-get -y -f install libjpeg-dev
+RUN apt-get -y -f install libpng-dev
+RUN apt-get -y -f install libtiff5-dev
+RUN apt-get -y -f install libudunits2-dev
 
 WORKDIR /
 
