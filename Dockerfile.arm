@@ -12,7 +12,7 @@ RUN apt-get upgrade
 # Required to build R package dependencies
 
 RUN apt-get -y install libharfbuzz-dev
-RUN apt-get -y install libfreetype6-dev
+RUN apt-get -y install libfreetype-dev
 RUN apt-get -y install libfribidi-dev
 RUN apt-get -y install libgdal-dev
 RUN apt-get -y install libgit2-dev
