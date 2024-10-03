@@ -202,7 +202,7 @@ ui = function() {
                                         choices =
                                           setNames(
                                             c("LI",     "LN"),
-                                            c("Linear", "Log10")
+                                            c("Linear", "Logarithmic")
                                           )
                             )
                           ),

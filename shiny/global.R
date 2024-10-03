@@ -61,9 +61,36 @@ ALL_GEAR_GROUPS    = setNames(as.character(CATDIS_gear_groups$CODE), paste0(CATD
 ALL_FISHING_MODES  = setNames(c("FSC", "FAD", "n/a"),
                               c("FSC - Free-swimming schools", "FAD - Log-associated schools", "n/a - Unknown / Unavailable"))
 
-ALL_SPECIES        = setNames(ALL_SPECIES_DATA$CODE, paste0(ALL_SPECIES_DATA$CODE, " - ", ALL_SPECIES_DATA$NAME_EN))
+SP_TEMPERATE = ALL_SPECIES_DATA[CODE %in% c("ALB", "BFT")]
+SP_TROPICAL  = ALL_SPECIES_DATA[CODE %in% c("BET", "SKJ", "YFT")]
+SP_BILLFISH  = ALL_SPECIES_DATA[CODE %in% c("SWO", "BUM", "SAI", "WHM")]
+
+ALL_SPECIES = list(
+  "Temperate tunas" = setNames(as.character(SP_TEMPERATE$CODE),    paste0(SP_TEMPERATE$CODE,    " - ", SP_TEMPERATE$NAME_EN)),
+  "Tropical tunas"  = setNames(as.character(SP_TROPICAL$CODE),     paste0(SP_TROPICAL$CODE,     " - ", SP_TROPICAL$NAME_EN)),
+  "Billfish"        = setNames(as.character(SP_BILLFISH$CODE),     paste0(SP_BILLFISH$CODE,     " - ", SP_BILLFISH$NAME_EN))
+)
+
+#ALL_SPECIES        = setNames(ALL_SPECIES_DATA$CODE, paste0(ALL_SPECIES_DATA$CODE, " - ", ALL_SPECIES_DATA$NAME_EN))
 ALL_STOCKS         = sort(unique(CATDIS_Y$STOCK))
-ALL_SAMPLING_AREAS = sort(unique(CATDIS_Y$SAMPLING_AREA))
+
+SAMPLING_AREAS = sort(unique(CATDIS_Y$SAMPLING_AREA))
+
+SA_ALB = SAMPLING_AREAS[which(str_sub(SAMPLING_AREAS, 1, 2) == "AL")]
+SA_BFT = SAMPLING_AREAS[which(str_sub(SAMPLING_AREAS, 1, 2) == "BF")]
+SA_BET = SAMPLING_AREAS[which(str_sub(SAMPLING_AREAS, 1, 2) == "BE")]
+SA_SKJ = SAMPLING_AREAS[which(str_sub(SAMPLING_AREAS, 1, 2) == "SJ")]
+SA_YFT = SAMPLING_AREAS[which(str_sub(SAMPLING_AREAS, 1, 2) == "YF")]
+SA_BIL = SAMPLING_AREAS[which(str_sub(SAMPLING_AREAS, 1, 3) == "BIL")]
+
+ALL_SAMPLING_AREAS = list(
+  "Albacore tuna"         = SA_ALB,
+  "Northern bluefin tuna" = SA_BFT,
+  "Bigeye tuna"           = SA_BET,
+  "Skipjack tuna"         = SA_SKJ,
+  "Yellowfin tuna"        = SA_YFT,
+  "Billfish"              = SA_BIL
+)
 
 PIEMAP_CATEGORIES = setNames(c("Gear group", "Species"),
                              c("GearGroup", "Species"))
