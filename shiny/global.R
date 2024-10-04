@@ -129,14 +129,14 @@ ALL_ATLANTIC_AREAS = setNames(
 
 ATLANTIC_AREAS_LIMITS =
   list(
-    "AT"    = list(xlim = DEFAULT_XLIM, ylim = DEFAULT_YLIM),
-    "AT-NW" = list(xlim = c(-100,  -30), ylim = c(   5,   75)),
-    "AT-NE" = list(xlim = c( -30,   40), ylim = c(   5,   75)),
-    "MD"    = list(xlim = c( -10,   45), ylim = c(  20,   75)),
-    "AT-WT" = list(xlim = c( -75,  -30), ylim = c( -20,   25)),
-    "AT-ET" = list(xlim = c( -30,   15), ylim = c( -20,   25)),
-    "AT-SW" = list(xlim = c(-100,  -30), ylim = c(   5,  -70)),
-    "AT-SE" = list(xlim = c( -30,   45), ylim = c(   5,  -70))
+    "AT"    = list(xlim = DEFAULT_XLIM,  ylim = DEFAULT_YLIM,  legend_x = -90, legend_y = -50),
+    "AT-NW" = list(xlim = c(-100,  -30), ylim = c(   5,   75), legend_x = -95, legend_y =  10),
+    "AT-NE" = list(xlim = c( -30,   40), ylim = c(   5,   75), legend_x =  20, legend_y =  10),
+    "MD"    = list(xlim = c( -10,   45), ylim = c(  20,   75), legend_x =  -5, legend_y =  25),
+    "AT-WT" = list(xlim = c( -75,  -30), ylim = c( -20,   25), legend_x = -70, legend_y = -15),
+    "AT-ET" = list(xlim = c( -30,   15), ylim = c( -20,   25), legend_x =   5, legend_y =  20),
+    "AT-SW" = list(xlim = c( -95,  -30), ylim = c(   5,  -60), legend_x = -90, legend_y = -55),
+    "AT-SE" = list(xlim = c( -30,   35), ylim = c(   5,  -60), legend_x = -25, legend_y = -55)
   )
 
 ### BUILDING CUSTOM REFERENCE COLORS

@@ -123,8 +123,32 @@ server = function(input, output, session) {
     category = input$piemapCategory
     metric   = input$piemapMetric
 
+    # Selected area boundaries
     area_xlim = ATLANTIC_AREAS_LIMITS[area][[1]]$xlim
     area_ylim = ATLANTIC_AREAS_LIMITS[area][[1]]$ylim
+
+    # Calculates the pie chart legend position in order to show it always
+    # in the same place on the map (regardless of the selected area)
+
+    x_width_default  = DEFAULT_XLIM[2] - DEFAULT_XLIM[1]
+    x_width          = area_xlim[2]    - area_xlim[1]
+
+    y_height_default = DEFAULT_YLIM[2] - DEFAULT_YLIM[1]
+    y_height         = area_ylim[2]    - area_ylim[1]
+
+    default_legend_x_displacement = DEFAULT_PIECHART_LEGEND_X - DEFAULT_XLIM[1]
+    default_legend_y_displacement = DEFAULT_PIECHART_LEGEND_Y - DEFAULT_YLIM[1]
+
+    default_legend_x_displacement_rel = default_legend_x_displacement / x_width_default
+    default_legend_y_displacement_rel = default_legend_y_displacement / y_height_default
+
+    calc_legend_x = area_xlim[1] + default_legend_x_displacement_rel * x_width
+    calc_legend_y = area_ylim[1] + default_legend_y_displacement_rel * y_height
+
+    # Revert on using the manually-set legend coordinates...
+
+    legend_x = ATLANTIC_AREAS_LIMITS[area][[1]]$legend_x
+    legend_y = ATLANTIC_AREAS_LIMITS[area][[1]]$legend_y
 
     colnames(CATDIS_data)[which(colnames(CATDIS_data) == category)] = "CATEGORY"
 
@@ -229,8 +253,8 @@ server = function(input, output, session) {
 
         geom_scatterpie_legend(
           CATDIS_data_w$RADIUS_REL,
-          x = -90,
-          y = -25,
+          x = legend_x,
+          y = legend_y,
           labeller = function(x) {
             paste(prettyNum(round((x / input$radius) ^ 2 * max_radius), big.mark = ","), " t")
           },
@@ -259,9 +283,9 @@ server = function(input, output, session) {
     pie = pie + theme(legend.position = "none")
 
     return(
-      plot_grid(
+      plot_grid(               # Creates a 2x1 grid to consistently show the map and its legend
         pie, pie_legend,
-        rel_widths = c(5, 1.3)
+        rel_widths = c(5, 1.3) # Proportions: Map:legned = 5:1.3
       ) +
 
       theme(plot.background = element_rect(fill = "white", colour = NA))
@@ -368,9 +392,9 @@ server = function(input, output, session) {
     heat = heat + theme(legend.position = "none")
 
     return(
-      plot_grid(
+      plot_grid(               # Creates a 2x1 grid to consistently show the map and its legend
         heat, heat_legend,
-        rel_widths = c(5, 1.3)
+        rel_widths = c(5, 1.3) # Proportions: Map:legned = 5:1.3
       ) +
 
       theme(plot.background = element_rect(fill = "white", colour = NA))
