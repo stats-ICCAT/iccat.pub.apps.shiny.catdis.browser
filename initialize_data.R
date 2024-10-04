@@ -74,3 +74,37 @@ save("CATDIS_Q", file = "./shiny/CATDIS_Q.RData",   compress = "gzip")
 
 write.table(CATDIS_Y, file = gzfile(paste0("./shiny/www/", META$FILENAME_Y)), sep = ",", na = "", row.names = FALSE)
 write.table(CATDIS_Q, file = gzfile(paste0("./shiny/www/", META$FILENAME_Q)), sep = ",", na = "", row.names = FALSE)
+
+raw_geometries_for = function(area_codes, connection = DB_GIS(server = "ATENEA\\SQL22")) {
+  return(
+    tabular_query(
+      connection,
+      paste0("
+        SELECT
+          CODE,
+          TYPE_CODE,
+          NAME_EN,
+          NAME_ES,
+          NAME_FR,
+          SURFACE_IN_ICCAT_AREA,
+         (GEOMETRY_CUT.MakeValid()).STAsText() AS GEOMETRY_WKT
+        FROM
+          [AREAS]
+        WHERE
+          CODE IN (", paste(shQuote(area_codes, type = "sh"), collapse=", "), ")"
+      )
+    )
+  )
+}
+
+FOO = raw_geometries_for(c("MD",
+                           "AT",
+                           "AT-N",
+                           "AT-S",
+                           "AT-W",
+                           "AT-E",
+                           "AT-NW",
+                           "AT-NE",
+                           "AT-SW",
+                           "AT-SE"
+                           ))

@@ -44,15 +44,21 @@ ui = function() {
               fluidRow(
                 column(
                   width = 12,
-                  UI_select_input("species", "Species:", "All species", ALL_SPECIES)
+                  UI_select_input("quarters", "Quarters:", "All quarters", ALL_QUARTERS)
                 )
               ),
               fluidRow(
                 column(
                   width = 12,
-                  UI_select_input("stocks", "Stock(s):", "All stocks", ALL_STOCKS)
+                  UI_select_input("species", "Species:", "All species", ALL_SPECIES)
                 )
               ),
+              #fluidRow(
+              #  column(
+              #    width = 12,
+              #    UI_select_input("stocks", "Stock(s):", "All stocks", ALL_STOCKS)
+              #  )
+              #),
               fluidRow(
                 column(
                   width = 12,
@@ -105,7 +111,7 @@ ui = function() {
             column(
               width = 10,
               tabsetPanel(
-                id = "output",
+                id = "dataset",
                 tabPanel(
                   TAB_PIEMAP,
                   icon = icon("chart-pie"),
@@ -116,11 +122,21 @@ ui = function() {
                         fluidRow(
                           column(
                             width = 12,
+                            selectInput("piemapArea", label = "Zoom on:",
+                                        width = "100%",
+                                        choices = ALL_ATLANTIC_AREAS
+                            )
+                          )
+                        ),
+                        fluidRow(
+                          column(
+                            width = 12,
                             selectInput("piemapCategory", label = "Categorise by:",
+                                        width = "100%",
                                         choices =
                                           setNames(
-                                            c("GEAR_GROUP", "SPECIES", "SCHOOL_TYPE"),
-                                            c("Gear group", "Species", "School type")
+                                            c("GEAR_GROUP", "SPECIES", "SCHOOL_TYPE", "QUARTER"),
+                                            c("Gear group", "Species", "School type", "Quarter")
                                           )
                             )
                           )
@@ -128,7 +144,8 @@ ui = function() {
                         fluidRow(
                           column(
                             width = 12,
-                            selectInput("metricPie", label = "Metric:",
+                            selectInput("piemapMetric", label = "Metric:",
+                                        width = "100%",
                                         choices =
                                           setNames(
                                             c("AC",           "AV",             "AVC"),
@@ -141,6 +158,7 @@ ui = function() {
                           column(
                             width = 12,
                             selectInput("pieCenter", label = "Pie position:",
+                                        width = "100%",
                                         selected = "O",
                                         choices =
                                           setNames(
@@ -166,6 +184,7 @@ ui = function() {
                           column(
                             width = 12,
                             selectInput("catchScale", label = "Reference catch scale",
+                                        width = "100%",
                                         choices = c("Calculated", "Fixed")
                             ),
                             conditionalPanel(
@@ -198,7 +217,17 @@ ui = function() {
                         fluidRow(
                           column(
                             width = 12,
+                            selectInput("heatmapArea", label = "Zoom on:",
+                                        width = "100%",
+                                        choices = ALL_ATLANTIC_AREAS
+                            )
+                          )
+                        ),
+                        fluidRow(
+                          column(
+                            width = 12,
                             selectInput("scale", label = "Scale:",
+                                        width = "100%",
                                         choices =
                                           setNames(
                                             c("LI",     "LN"),
@@ -210,7 +239,8 @@ ui = function() {
                         fluidRow(
                           column(
                             width = 12,
-                            selectInput("metricHeat", label = "Metric:",
+                            selectInput("heatmapMetric", label = "Metric:",
+                                        width = "100%",
                                         choices =
                                           setNames(
                                             c("AC",           "AV",             "AVC"),

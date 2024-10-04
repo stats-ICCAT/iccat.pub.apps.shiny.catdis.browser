@@ -1,6 +1,7 @@
 server = function(input, output, session) {
   EMPTY_FILTER =
     list(years = c(),
+         quarters = c(),
          radius = 3,
          flags = c(),
          fleets = c(),
@@ -15,10 +16,11 @@ server = function(input, output, session) {
 
   default_filter_data = function(data, input = EMPTY_FILTER) {
     INFO(paste0("Years          : ", paste0(input$years,          collapse = "-")))
+    INFO(paste0("Quarters       : ", paste0(input$quarters,       collapse = ", ")))
     INFO(paste0("Flags          : ", paste0(input$flags,          collapse = ", ")))
     INFO(paste0("Fleets         : ", paste0(input$fleets,         collapse = ", ")))
     INFO(paste0("Gear groups    : ", paste0(input$gearGroups,     collapse = ", ")))
-    INFO(paste0("Fishing modes  : ", paste0(input$schoolTypes,   collapse = ", ")))
+    INFO(paste0("Fishing modes  : ", paste0(input$schoolTypes,    collapse = ", ")))
     INFO(paste0("Species        : ", paste0(input$species,        collapse = ", ")))
     INFO(paste0("Stocks         : ", paste0(input$stocks,         collapse = ", ")))
     INFO(paste0("Sampling areas : ", paste0(input$sampling_areas, collapse = ", ")))
@@ -37,6 +39,10 @@ server = function(input, output, session) {
     } else {
       first_year = min(data$YEAR)
       last_year  = max(data$YEAR)
+    }
+
+    if(!is.null(input$quarters)) {
+      filtered = filtered[QUARTER %in% names(ALL_QUARTERS[as.integer(input$quarters)])]
     }
 
     if(!is.null(input$flags)) {
@@ -83,7 +89,7 @@ server = function(input, output, session) {
   })
 
   filter_catdis_data_ = function(input = EMPTY_FILTER) {
-    filtered = default_filter_data(CATDIS_Y, input)
+    filtered = default_filter_data(CATDIS_Q, input)
 
     return(filtered)
   }
@@ -113,8 +119,12 @@ server = function(input, output, session) {
 
     if(nrow(CATDIS_data) == 0) return()
 
+    area     = input$piemapArea
     category = input$piemapCategory
-    metric   = input$metricPie
+    metric   = input$piemapMetric
+
+    area_xlim = ATLANTIC_AREAS_LIMITS[area][[1]]$xlim
+    area_ylim = ATLANTIC_AREAS_LIMITS[area][[1]]$ylim
 
     colnames(CATDIS_data)[which(colnames(CATDIS_data) == category)] = "CATEGORY"
 
@@ -133,6 +143,9 @@ server = function(input, output, session) {
     } else if(category == "SCHOOL_TYPE") {
       legend_label = "School type"
       fill_colors = SCHOOL_TYPE_COLORS[SCHOOL_TYPE %in% unique(CATDIS_data$CATEGORY)]$FILL
+    } else if(category == "QUARTER") {
+      legend_label = "Quarter"
+      fill_colors = QUARTER_COLORS[QUARTER %in% unique(CATDIS_data$CATEGORY)]$FILL
     }
 
     if(length(all_categories) == 1) {
@@ -176,16 +189,27 @@ server = function(input, output, session) {
     else
       pie_legend_breaks = c(0, input$radius / sqrt(2), input$radius)
 
+    c_sf = coord_sf(xlim = area_xlim,
+                    ylim = area_ylim,
+                    crs = iccat.pub.maps::CRS_EQUIDISTANT,
+                    default_crs = sf::st_crs(iccat.pub.maps::CRS_WGS84),
+                    label_axes = "--EN", )
+
+    c_sf$default = TRUE
+
     pie =
-      map.atlantic() +
-        #geom_sf(
-        #  data = st_as_sf(ATLANTIC_OCEAN_RAW_GEOMETRY, crs = 4326, wkt = "GEOMETRY_WKT"),
-        #  fill = "transparent",
-        #  color = "#00000044"
-        #) +
+      map.atlantic(crs = iccat.pub.maps::CRS_EQUIDISTANT) +
+
+        geom_sf( # Adds the outline of the ICCAT area
+          data = geometries_for(ATLANTIC_OCEAN_RAW_GEOMETRY,
+                                target_crs = iccat.pub.maps::CRS_EQUIDISTANT),
+          fill = "transparent",
+          color = "#00000044"
+        ) +
 
         geom_sf(
-          data = st_as_sf(GRIDS_5x5_RAW_GEOMETRIES, crs = 4326, wkt = "GEOMETRY_WKT"),
+          data = geometries_for(GRIDS_5x5_RAW_GEOMETRIES,
+                                target_crs = iccat.pub.maps::CRS_EQUIDISTANT),
           fill = "transparent",
           color = "#88888822"
         ) +
@@ -197,8 +221,8 @@ server = function(input, output, session) {
               r = RADIUS_REL
           ),
           linewidth = .3,
-          alpha = .7,
-          cols = as.character(sort(unique(CATDIS_data$CATEGORY))),
+          alpha     = .7,
+          cols      = as.character(sort(unique(CATDIS_data$CATEGORY))),
 
           long_format = FALSE
         ) +
@@ -208,7 +232,6 @@ server = function(input, output, session) {
           x = -90,
           y = -25,
           labeller = function(x) {
-            #paste(prettyNum(round((x / input$radius) ^ 2 * max(CATDIS_data_w$RADIUS)), big.mark = ","), " t")
             paste(prettyNum(round((x / input$radius) ^ 2 * max_radius), big.mark = ","), " t")
           },
           breaks = pie_legend_breaks,
@@ -227,7 +250,9 @@ server = function(input, output, session) {
           legend.margin = margin(t = 1, unit = "cm"),
           legend.title  = element_text(size = 9),
           legend.text   = element_text(size = 9)
-        )
+        ) +
+
+        c_sf
 
     pie_legend = get_legend(pie)
 
@@ -253,8 +278,12 @@ server = function(input, output, session) {
 
     if(nrow(CATDIS_data) == 0) return()
 
-    metric   = input$metricHeat
+    area     = input$heatmapArea
     scale    = input$scale
+    metric   = input$heatmapMetric
+
+    area_xlim = ATLANTIC_AREAS_LIMITS[area][[1]]$xlim
+    area_ylim = ATLANTIC_AREAS_LIMITS[area][[1]]$ylim
 
     label = "Catches / year"
     label_unit = "t"
@@ -279,16 +308,24 @@ server = function(input, output, session) {
         by.x = "GRID", by.y = "CODE"
       )
 
+    c_sf = coord_sf(xlim = area_xlim,
+                    ylim = area_ylim,
+                    crs = iccat.pub.maps::CRS_EQUIDISTANT,
+                    default_crs = sf::st_crs(iccat.pub.maps::CRS_WGS84),
+                    label_axes = "--EN", )
+
+    c_sf$default = TRUE
+
     heat =
-      map.atlantic() +
+      map.atlantic(crs = iccat.pub.maps::CRS_EQUIDISTANT) +
         #geom_sf(
-        #  data = st_as_sf(ATLANTIC_OCEAN_RAW_GEOMETRY, crs = 4326, wkt = "GEOMETRY_WKT"),
+        #  data = geometries_for(ATLANTIC_OCEAN_RAW_GEOMETRY, target_crs = CRS_EQUIDISTANT),
         #  fill = "transparent",
         #  color = "#00000044"
         #) +
 
         geom_sf(
-          data = st_as_sf(GRIDS_5x5_RAW_GEOMETRIES, crs = 4326, wkt = "GEOMETRY_WKT"),
+          data = geometries_for(GRIDS_5x5_RAW_GEOMETRIES, target_crs = CRS_EQUIDISTANT),
           fill = "transparent",
           color = "#88888822"
         ) +
@@ -322,7 +359,9 @@ server = function(input, output, session) {
           legend.margin = margin(t = 1, unit = "cm"),
           legend.title  = element_text(size = 9),
           legend.text   = element_text(size = 9)
-        )
+        ) +
+
+        c_sf
 
     heat_legend = get_legend(heat)
 
@@ -348,6 +387,7 @@ server = function(input, output, session) {
       filtered_data = validate_filtering(filter_catdis_data())
 
       filtered_data = filtered_data[, .(YEAR,
+                                        QUARTER,
                                         FLAG,
                                         FLEET,
                                         GEAR_GROUP,
@@ -374,7 +414,7 @@ server = function(input, output, session) {
           filter    = "none",
           selection = "none",
           rownames = FALSE,
-          colnames = c("Year",
+          colnames = c("Year", "Quarter",
                        "Flag name", "Fleet code",
                        "Gear group", "School type",
                        "Species", "Stock",
@@ -390,6 +430,7 @@ server = function(input, output, session) {
 
   get_filename_components = function(input) {
     components = c(paste0(input$years,         collapse = "-"),
+                   paste0(paste0("Q", sort(input$quarters)), collapse = "+"),
                    paste0(input$species,       collapse = "+"),
                    paste0(input$stocks,        collapse = "+"),
                    paste0(input$flags,         collapse = "+"),
@@ -398,6 +439,9 @@ server = function(input, output, session) {
                    paste0(input$gears,         collapse = "+"),
                    paste0(input$schoolTypes,   collapse = "+"),
                    paste0(input$samplingAreas, collapse = "+"))
+
+    if(input$dataset == TAB_PIEMAP) components = append(components, input$piemapArea)
+    else if(input$dataset == TAB_HEATMAP) components = append(components, input$heatmapArea)
 
     components = components[which(components != "")]
 
@@ -428,23 +472,23 @@ server = function(input, output, session) {
 
   output$downloadFiltered = downloadHandler(
     filename = function() {
-      output = input$output
+      dataset = input$dataset
 
       filename_prefix = paste0("ICCAT_CATDIS_", serialize_last_update_date())
 
-      if(output == TAB_PIEMAP)
+      if(dataset == TAB_PIEMAP)
         return(paste0(filename_prefix, "_piemap_",  get_filename_components_piemap (input), ".png"))
-      else if(output == TAB_HEATMAP)
+      else if(dataset == TAB_HEATMAP)
         return(paste0(filename_prefix, "_heatmap_", get_filename_components_heatmap(input), ".png"))
       else
         return(paste0(filename_prefix, "_data_",    get_filename_components        (input), ".csv.gz"))
     },
     content = function(file) {
-      output = input$output
+      dataset = input$dataset
 
-      if(output == TAB_PIEMAP)
+      if(dataset == TAB_PIEMAP)
         ggsave(filename = file, piemap()  + annotation_custom(grob = ICCAT_LOGO_RASTER), width = 10, height = 8)
-      else if(output == TAB_HEATMAP)
+      else if(dataset == TAB_HEATMAP)
         ggsave(filename = file, heatmap() + annotation_custom(grob = ICCAT_LOGO_RASTER), width = 10, height = 8)
       else
         write.csv(filter_catdis_data(), gzfile(file), row.names = FALSE, na = "")
