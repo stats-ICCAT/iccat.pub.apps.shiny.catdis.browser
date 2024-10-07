@@ -154,12 +154,18 @@ server = function(input, output, session) {
 
     colnames(CATDIS_data)[which(colnames(CATDIS_data) == category)] = "CATEGORY"
 
+    # Computes the selected metric for each pie:
+
+    # Total accumulation
     if     (metric == "AC")  { CATDIS_data = CATDIS_data[, .(CATCH = sum(CATCH, na.rm = TRUE)),                                         keyby = .(GRID, GRID_LON, GRID_LAT, CATEGORY)] }
+    # Annual average
     else if(metric == "AV")  { CATDIS_data = CATDIS_data[, .(CATCH = sum(CATCH, na.rm = TRUE) / (input$years[2] - input$years[1] + 1)), keyby = .(GRID, GRID_LON, GRID_LAT, CATEGORY)] }
+    # Annual average (corrected)
     else if(metric == "AVC") { CATDIS_data = CATDIS_data[, .(CATCH = sum(CATCH, na.rm = TRUE) / length(unique(YEAR))),                  keyby = .(GRID, GRID_LON, GRID_LAT, CATEGORY)] }
 
     all_categories = unique(CATDIS_data$CATEGORY)
 
+    # Computes the pie slices colors based on the selected category:
     if(category == "GEAR_GROUP") {
       legend_label = "Gear group"
       fill_colors = REF_GEAR_GROUPS_COLORS[GEAR_GROUP_CODE %in% unique(CATDIS_data$CATEGORY)][order(GEAR_GROUP_CODE)]$FILL
@@ -201,24 +207,27 @@ server = function(input, output, session) {
         value.var = "CATCH"
       )
 
+    # Calculates the radius as the sum of catches of all categories for  a given pie
     CATDIS_data_w[, RADIUS     := rowSums(CATDIS_data_w[, 3:ncol(CATDIS_data_w)])]
 
+    # Calculates the masimum radius either as either fixed value, or as a function of the maximum RADIUS value detected in the aggregate data
     max_radius = ifelse(input$catchScale == "Fixed", 10^input$catch, max(CATDIS_data_w$RADIUS))
 
     #CATDIS_data_w[, RADIUS_REL := input$radius * sqrt(RADIUS / max(RADIUS))]
     CATDIS_data_w[, RADIUS_REL := input$radius * sqrt(RADIUS / max_radius)]
 
-    if(input$radius <= 1)
+    if(input$radius <= 1)     # Defines one pie legend break only if radius is <= 1
       pie_legend_breaks = c(input$radius)
-    else if(input$radius < 3)
+    else if(input$radius < 3) # Defines two pie legend breaks if 1 < radius < 3
       pie_legend_breaks = c(0, input$radius)
-    else
+    else                      # Otherwise defines three pie legend breaks if radius >= 3
       pie_legend_breaks = c(0, input$radius / sqrt(2), input$radius)
 
+    # The coordinate system to enforce on the final plot
     c_sf = coord_sf(xlim = area_xlim,
                     ylim = area_ylim,
-                    crs = iccat.pub.maps::CRS_EQUIDISTANT,
-                    default_crs = sf::st_crs(iccat.pub.maps::CRS_WGS84),
+                    crs         = iccat.pub.maps::CRS_EQUIDISTANT,       # The Coordinate Reference System we want to use for display purposes...
+                    default_crs = sf::st_crs(iccat.pub.maps::CRS_WGS84), # The Coordinate Reference System the simple features are set to by default
                     label_axes = "--EN", )
 
     c_sf$default = TRUE
@@ -229,23 +238,23 @@ server = function(input, output, session) {
     if(!is.null(overlays))
       base_geometries = geometries_for(AREA_OVERLAYS[CODE %in% overlays], target_crs = iccat.pub.maps::CRS_EQUIDISTANT)
 
-    pie =
+    piemap =
       map.atlantic(crs = iccat.pub.maps::CRS_EQUIDISTANT) +
         geom_sf( # Adds the outline of the selected overlays (ICCAT area by default)
           data = base_geometries,
           fill = "transparent",
-          color = ifelse(is.null(overlays), "#00000044", "#000000AA")
+          color = ifelse(is.null(overlays), "#00000044", "#000000CC")
         ) +
 
-        geom_sf(
+        geom_sf( # Fixed layer with all 5x5 grids shown in very light, transparent gray
           data = geometries_for(GRIDS_5x5_RAW_GEOMETRIES,
                                 target_crs = iccat.pub.maps::CRS_EQUIDISTANT),
           fill = "transparent",
           color = "#88888822"
         ) +
 
-        geom_scatterpie(
-          data = CATDIS_data_w,
+        geom_scatterpie( # The actual scatter pie elements...
+          data = CATDIS_data_w[order(+RADIUS_REL)],
           aes(x = LON,
               y = LAT,
               r = RADIUS_REL
@@ -257,7 +266,7 @@ server = function(input, output, session) {
           long_format = FALSE
         ) +
 
-        geom_scatterpie_legend(
+        geom_scatterpie_legend( # ...and their legend
           CATDIS_data_w$RADIUS_REL,
           x = legend_x,
           y = legend_y,
@@ -282,16 +291,18 @@ server = function(input, output, session) {
           legend.text   = element_text(size = 9)
         ) +
 
-        c_sf
+        c_sf # Adds the coordinate system, including the xlim / ylim to ensure everything is shown properly
 
-    pie_legend = get_legend(pie)
+    # Extracts the legend (as a GROB) from the piemap...
+    piemap_legend = get_legend(piemap)
 
-    pie = pie + theme(legend.position = "none")
+    # .. then removes the legend from the piemap itself...
+    piemap = piemap + theme(legend.position = "none")
 
     return(
       plot_grid(               # Creates a 2x1 grid to consistently show the map and its legend
-        pie, pie_legend,
-        rel_widths = c(5, 1.3) # Proportions: Map:legned = 5:1.3
+        piemap, piemap_legend,
+        rel_widths = c(5, 1.3) # Proportions: Map:legend = 5:1.3
       ) +
 
       theme(plot.background = element_rect(fill = "white", colour = NA))
@@ -320,16 +331,21 @@ server = function(input, output, session) {
     label = "Catches / year"
     label_unit = "t"
 
+    # Computes the selected metric for each pie:
+
     if (metric == "AC")  {
       label = "Catches"
+      # Total accumulation
       CATDIS_data = CATDIS_data[, .(CATCH = sum(CATCH, na.rm = TRUE)), keyby = .(GRID)]
     } else if(metric == "AV")  {
+      # Annual average
       CATDIS_data = CATDIS_data[, .(CATCH = sum(CATCH, na.rm = TRUE) / (input$years[2] - input$years[1] + 1)), keyby = .(GRID)]
     } else if(metric == "AVC") {
+      # Annual average (corrected)
       CATDIS_data = CATDIS_data[, .(CATCH = sum(CATCH, na.rm = TRUE) / length(unique(YEAR))), keyby = .(GRID)]
     }
 
-    if(scale == "LN") {
+    if(scale == "LN") { # Updates catch values to their corresponding log10
       label_unit = "log10(t)"
       CATDIS_data[, CATCH := log10(CATCH)]
     }
@@ -340,10 +356,11 @@ server = function(input, output, session) {
         by.x = "GRID", by.y = "CODE"
       )
 
+    # The coordinate system to enforce on the final plot
     c_sf = coord_sf(xlim = area_xlim,
                     ylim = area_ylim,
-                    crs = iccat.pub.maps::CRS_EQUIDISTANT,
-                    default_crs = sf::st_crs(iccat.pub.maps::CRS_WGS84),
+                    crs         = iccat.pub.maps::CRS_EQUIDISTANT,       # The Coordinate Reference System we want to use for display purposes...
+                    default_crs = sf::st_crs(iccat.pub.maps::CRS_WGS84), # The Coordinate Reference System the simple features are set to by default
                     label_axes = "--EN", )
 
     c_sf$default = TRUE
@@ -354,21 +371,21 @@ server = function(input, output, session) {
     if(!is.null(overlays))
       base_geometries = geometries_for(AREA_OVERLAYS[CODE %in% overlays], target_crs = iccat.pub.maps::CRS_EQUIDISTANT)
 
-    heat =
+    heatmap =
       map.atlantic(crs = iccat.pub.maps::CRS_EQUIDISTANT) +
         geom_sf( # Adds the outline of the selected overlays (ICCAT area by default)
           data = base_geometries,
           fill = "transparent",
-          color = ifelse(is.null(overlays), "#00000044", "#000000AA")
+          color = ifelse(is.null(overlays), "#00000044", "#000000CC")
         ) +
 
-        geom_sf(
+        geom_sf( # Fixed layer with all 5x5 grids shown in very light, transparent gray
           data = geometries_for(GRIDS_5x5_RAW_GEOMETRIES, target_crs = CRS_EQUIDISTANT),
           fill = "transparent",
           color = "#88888822"
         ) +
 
-        geom_sf(
+        geom_sf( # The actual heatmap elements, as a series of 5x5 grids with different color intensity (proportional to their catch)
           data = CATDIS_data,
           aes(
             geometry = GEOMETRY_WKT,
@@ -378,7 +395,7 @@ server = function(input, output, session) {
           alpha = .6
         ) +
 
-        scale_fill_gradient(
+        scale_fill_gradient( # The gradient scale
           low   = "#FFFFFF",
           high  = "#0000AA",
           guide = "legend",
@@ -399,16 +416,18 @@ server = function(input, output, session) {
           legend.text   = element_text(size = 9)
         ) +
 
-        c_sf
+        c_sf # Adds the coordinate system, including the xlim / ylim to ensure everything is shown properly
 
-    heat_legend = get_legend(heat)
+    # Extracts the legend (as a GROB) from the heatmap...
+    heatmap_legend = get_legend(heatmap)
 
-    heat = heat + theme(legend.position = "none")
+    # .. then removes the legend from the heatmap itself...
+    heatmap = heatmap + theme(legend.position = "none")
 
     return(
       plot_grid(               # Creates a 2x1 grid to consistently show the map and its legend
-        heat, heat_legend,
-        rel_widths = c(5, 1.3) # Proportions: Map:legned = 5:1.3
+        heatmap, heatmap_legend,
+        rel_widths = c(5, 1.3) # Proportions: Map:legend = 5:1.3
       ) +
 
       theme(plot.background = element_rect(fill = "white", colour = NA))
@@ -466,9 +485,11 @@ server = function(input, output, session) {
       )
     })
 
-  get_filename_components = function(input) {
+  get_filename_components = function(input) { # Common part of the filename, built using the selected filters
+    quarters_labels = paste0("Q", sort(input$quarters))
+
     components = c(paste0(input$years,         collapse = "-"),
-                   paste0(paste0("Q", sort(input$quarters)), collapse = "+"),
+                   paste0(quarters_labels,     collapse = "+"),
                    paste0(input$species,       collapse = "+"),
                    paste0(input$stocks,        collapse = "+"),
                    paste0(input$flags,         collapse = "+"),
@@ -478,18 +499,21 @@ server = function(input, output, session) {
                    paste0(input$schoolTypes,   collapse = "+"),
                    paste0(input$samplingAreas, collapse = "+"))
 
-    if(input$dataset == TAB_PIEMAP) components = append(components, input$piemapArea)
-    else if(input$dataset == TAB_HEATMAP) components = append(components, input$heatmapArea)
+    if(input$dataset == TAB_PIEMAP)       components = append(components, input$piemapArea)  # Additional filename components for the piemap
+    else if(input$dataset == TAB_HEATMAP) components = append(components, input$heatmapArea) # Additional filename components for the heatmap
+    # Nothing specific shall be added in case the selected tab is the one for the data table
 
+    # Removes all unset filename components...
     components = components[which(components != "")]
 
+    # Returns all valid filename components separated by an underscore ("_")
     return(paste0(components, collapse = "_"))
   }
 
   get_filename_components_piemap = function(input) {
     components = get_filename_components(input)
 
-    return(
+    return( # Adds the category and metrics as specific components of the piemap filename
       paste0(components, "_", input$piemapCategory, "_", input$metricPie)
     )
   }
@@ -497,7 +521,7 @@ server = function(input, output, session) {
   get_filename_components_heatmap = function(input) {
     components = get_filename_components(input)
 
-    return(
+    return( # Adds the scale and metrics as specific components of the heatmap filename
       paste0(components, "_", input$scale, "_", input$metricHeat)
     )
   }
@@ -509,26 +533,26 @@ server = function(input, output, session) {
   }
 
   output$downloadFiltered = downloadHandler(
-    filename = function() {
+    filename = function() { # Builds the downloaded file name on the basis of the selected tab and the various components (filters, etc.)
       dataset = input$dataset
 
       filename_prefix = paste0("ICCAT_CATDIS_", serialize_last_update_date())
 
-      if(dataset == TAB_PIEMAP)
+      if(dataset == TAB_PIEMAP)       # If the selected tab is the one for the piemap, downloads the piemap as an image
         return(paste0(filename_prefix, "_piemap_",  get_filename_components_piemap (input), ".png"))
-      else if(dataset == TAB_HEATMAP)
+      else if(dataset == TAB_HEATMAP) # If the selected tab is the one for the heatmap, downloads the heatmap as an image
         return(paste0(filename_prefix, "_heatmap_", get_filename_components_heatmap(input), ".png"))
-      else
+      else                            # Otherwise, the selected tab is the one for the data table, and therefore downloads the dataset as a zipped CSV file
         return(paste0(filename_prefix, "_data_",    get_filename_components        (input), ".csv.gz"))
     },
     content = function(file) {
       dataset = input$dataset
 
-      if(dataset == TAB_PIEMAP)
+      if(dataset == TAB_PIEMAP)       # If the selected tab is the one for the piemap, downloads the piemap as an image
         ggsave(filename = file, piemap()  + annotation_custom(grob = ICCAT_LOGO_RASTER), width = 10, height = 8)
-      else if(dataset == TAB_HEATMAP)
+      else if(dataset == TAB_HEATMAP) # If the selected tab is the one for the heatmap, downloads the heatmap as an image
         ggsave(filename = file, heatmap() + annotation_custom(grob = ICCAT_LOGO_RASTER), width = 10, height = 8)
-      else
+      else                            # Otherwise, the selected tab is the one for the data table, and therefore downloads the dataset as a zipped CSV file
         write.csv(filter_catdis_data(), gzfile(file), row.names = FALSE, na = "")
     }
   )
