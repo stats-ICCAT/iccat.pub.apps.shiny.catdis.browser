@@ -118,13 +118,21 @@ ui = function() {
                   div(style = "padding-top: .5em",
                     fluidRow(
                       column(
-                        width = 2,
+                        width = 3,
                         fluidRow(
                           column(
                             width = 12,
                             selectInput("piemapArea", label = "Zoom on:",
                                         width = "100%",
                                         choices = ALL_ATLANTIC_AREAS
+                            )
+                          )
+                        ),
+                        fluidRow(
+                          column(
+                            width = 12,
+                            UI_select_input("piemapAreaOverlay", label = "Overlay(s):", placeholder = "Select overlays",
+                                            choices = ALL_AREAS_OVERLAYS
                             )
                           )
                         ),
@@ -201,7 +209,7 @@ ui = function() {
                         )
                       ),
                       column(
-                        width = 10,
+                        width = 9,
                         plotOutput("piemap", width = "1000px", height = "800px")
                       )
                     )
@@ -213,13 +221,21 @@ ui = function() {
                   div(style = "padding-top: .5em",
                     fluidRow(
                       column(
-                        width = 2,
+                        width = 3,
                         fluidRow(
                           column(
                             width = 12,
                             selectInput("heatmapArea", label = "Zoom on:",
                                         width = "100%",
                                         choices = ALL_ATLANTIC_AREAS
+                            )
+                          )
+                        ),
+                        fluidRow(
+                          column(
+                            width = 12,
+                            UI_select_input("heatmapAreaOverlay", label = "Overlay(s):", placeholder = "Select overlays",
+                                            choices = ALL_AREAS_OVERLAYS
                             )
                           )
                         ),
@@ -251,7 +267,7 @@ ui = function() {
                         )
                       ),
                       column(
-                        width = 10,
+                        width = 9,
                         plotOutput("heatmap", width = "1000px", height = "800px")
                       )
                     )

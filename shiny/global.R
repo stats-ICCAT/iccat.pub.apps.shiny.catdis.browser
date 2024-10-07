@@ -26,6 +26,11 @@ set_log_level(LOG_INFO)
 
 load("./META.RData")
 load("./CATDIS_Q.RData")
+load("./FAO_MAJOR_AREAS.RData")
+load("./ICCAT_SUBAREAS.RData")
+
+AREA_OVERLAYS = as.data.table(FAO_MAJOR_AREAS)
+AREA_OVERLAYS = rbind(AREA_OVERLAYS, as.data.table(ICCAT_SUBAREAS))
 
 INFO(paste0(nrow(CATDIS_Q), " rows loaded from CATDIS_Q"))
 
@@ -137,6 +142,22 @@ ATLANTIC_AREAS_LIMITS =
     "AT-ET" = list(xlim = c( -30,   15), ylim = c( -20,   25), legend_x =   5, legend_y =  20),
     "AT-SW" = list(xlim = c( -95,  -30), ylim = c(   5,  -60), legend_x = -90, legend_y = -55),
     "AT-SE" = list(xlim = c( -30,   35), ylim = c(   5,  -60), legend_x = -25, legend_y = -55)
+  )
+
+ALL_FAO_MAJOR_AREAS_OVERLAYS =
+  setNames(
+    FAO_MAJOR_AREAS$CODE, paste0(FAO_MAJOR_AREAS$CODE, " - ", FAO_MAJOR_AREAS$NAME_EN)
+  )
+
+ALL_ICCAT_SUBAREAS_OVERLAYS =
+  setNames(
+    ICCAT_SUBAREAS$CODE, paste0(ICCAT_SUBAREAS$CODE, " - ", ICCAT_SUBAREAS$NAME_EN)
+  )
+
+ALL_AREAS_OVERLAYS =
+  list(
+    "FAO major areas" = ALL_FAO_MAJOR_AREAS_OVERLAYS,
+    "ICCAT subareas"  = ALL_ICCAT_SUBAREAS_OVERLAYS
   )
 
 ### BUILDING CUSTOM REFERENCE COLORS

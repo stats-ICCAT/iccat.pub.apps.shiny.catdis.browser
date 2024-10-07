@@ -97,14 +97,44 @@ raw_geometries_for = function(area_codes, connection = DB_GIS(server = "ATENEA\\
   )
 }
 
-FOO = raw_geometries_for(c("MD",
-                           "AT",
-                           "AT-N",
-                           "AT-S",
-                           "AT-W",
-                           "AT-E",
-                           "AT-NW",
-                           "AT-NE",
-                           "AT-SW",
-                           "AT-SE"
-                           ))
+raw_geometries_by_type = function(type_code, connection = DB_GIS(server = "ATENEA\\SQL22")) {
+  return(
+    tabular_query(
+      connection,
+      paste0("
+        SELECT
+          CODE,
+          TYPE_CODE,
+          NAME_EN,
+          NAME_ES,
+          NAME_FR,
+          SURFACE_IN_ICCAT_AREA,
+         (GEOMETRY_CUT.MakeValid()).STAsText() AS GEOMETRY_WKT
+        FROM
+          [AREAS]
+        WHERE
+          TYPE_CODE = '", type_code, "'"
+      )
+    )
+  )
+}
+
+FAO_MAJOR_AREAS =
+  raw_geometries_by_type("FAO_MAJOR")
+
+ICCAT_SUBAREAS =
+  raw_geometries_for(
+    c("MD",
+      "AT",
+      "AT-N",
+      "AT-S",
+      "AT-W",
+      "AT-E",
+      "AT-NW",
+      "AT-NE",
+      "AT-SW",
+      "AT-SE")
+  )
+
+save("FAO_MAJOR_AREAS", file = "./shiny/FAO_MAJOR_AREAS.RData", compress = "gzip")
+save("ICCAT_SUBAREAS",  file = "./shiny/ICCAT_SUBAREAS.RData",  compress = "gzip")

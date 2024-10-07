@@ -123,6 +123,8 @@ server = function(input, output, session) {
     category = input$piemapCategory
     metric   = input$piemapMetric
 
+    overlays = input$piemapAreaOverlay
+
     # Selected area boundaries
     area_xlim = ATLANTIC_AREAS_LIMITS[area][[1]]$xlim
     area_ylim = ATLANTIC_AREAS_LIMITS[area][[1]]$ylim
@@ -221,14 +223,18 @@ server = function(input, output, session) {
 
     c_sf$default = TRUE
 
+    base_geometries = geometries_for(ATLANTIC_OCEAN_RAW_GEOMETRY,
+                                     target_crs = iccat.pub.maps::CRS_EQUIDISTANT)
+
+    if(!is.null(overlays))
+      base_geometries = geometries_for(AREA_OVERLAYS[CODE %in% overlays], target_crs = iccat.pub.maps::CRS_EQUIDISTANT)
+
     pie =
       map.atlantic(crs = iccat.pub.maps::CRS_EQUIDISTANT) +
-
-        geom_sf( # Adds the outline of the ICCAT area
-          data = geometries_for(ATLANTIC_OCEAN_RAW_GEOMETRY,
-                                target_crs = iccat.pub.maps::CRS_EQUIDISTANT),
+        geom_sf( # Adds the outline of the selected overlays (ICCAT area by default)
+          data = base_geometries,
           fill = "transparent",
-          color = "#00000044"
+          color = ifelse(is.null(overlays), "#00000044", "#000000AA")
         ) +
 
         geom_sf(
@@ -306,6 +312,8 @@ server = function(input, output, session) {
     scale    = input$scale
     metric   = input$heatmapMetric
 
+    overlays = input$heatmapAreaOverlay
+
     area_xlim = ATLANTIC_AREAS_LIMITS[area][[1]]$xlim
     area_ylim = ATLANTIC_AREAS_LIMITS[area][[1]]$ylim
 
@@ -340,13 +348,19 @@ server = function(input, output, session) {
 
     c_sf$default = TRUE
 
+    base_geometries = geometries_for(ATLANTIC_OCEAN_RAW_GEOMETRY,
+                                     target_crs = iccat.pub.maps::CRS_EQUIDISTANT)
+
+    if(!is.null(overlays))
+      base_geometries = geometries_for(AREA_OVERLAYS[CODE %in% overlays], target_crs = iccat.pub.maps::CRS_EQUIDISTANT)
+
     heat =
       map.atlantic(crs = iccat.pub.maps::CRS_EQUIDISTANT) +
-        #geom_sf(
-        #  data = geometries_for(ATLANTIC_OCEAN_RAW_GEOMETRY, target_crs = CRS_EQUIDISTANT),
-        #  fill = "transparent",
-        #  color = "#00000044"
-        #) +
+        geom_sf( # Adds the outline of the selected overlays (ICCAT area by default)
+          data = base_geometries,
+          fill = "transparent",
+          color = ifelse(is.null(overlays), "#00000044", "#000000AA")
+        ) +
 
         geom_sf(
           data = geometries_for(GRIDS_5x5_RAW_GEOMETRIES, target_crs = CRS_EQUIDISTANT),

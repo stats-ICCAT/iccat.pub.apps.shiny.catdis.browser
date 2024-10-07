@@ -90,5 +90,9 @@
  }
 
 .vscomp-dropbox-container  {
-  z-index:99999 !important;
+  z-index: 999 !important;
+}
+
+.tooltip-comp {
+  z-index: 1999 !important;
 }
