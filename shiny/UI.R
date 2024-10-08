@@ -117,9 +117,9 @@ ui = function() {
                   icon = icon("chart-pie"),
                   div(style = "padding-top: .5em",
                     fluidRow(
-                      style = "padding-top: 3.7em",
                       column(
                         width = 3,
+                        style = "padding-top: 3.7em",
                         fluidRow(
                           column(
                             width = 12,
@@ -219,8 +219,8 @@ ui = function() {
                     fluidRow(
                       column(
                         width = 3,
+                        style = "padding-top: 3.7em",
                         fluidRow(
-                          style = "padding-top: 3.7em",
                           column(
                             width = 12,
                             UI_select_input_single("heatmapArea", label = "Zoom on:",
