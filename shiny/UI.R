@@ -117,14 +117,14 @@ ui = function() {
                   icon = icon("chart-pie"),
                   div(style = "padding-top: .5em",
                     fluidRow(
+                      style = "padding-top: 3.7em",
                       column(
                         width = 3,
                         fluidRow(
                           column(
                             width = 12,
-                            selectInput("piemapArea", label = "Zoom on:",
-                                        width = "100%",
-                                        choices = ALL_ATLANTIC_AREAS
+                            UI_select_input_single("piemapArea", label = "Zoom on:",
+                                                   choices = ALL_ATLANTIC_AREAS
                             )
                           )
                         ),
@@ -139,40 +139,56 @@ ui = function() {
                         fluidRow(
                           column(
                             width = 12,
-                            selectInput("piemapCategory", label = "Categorise by:",
-                                        width = "100%",
-                                        choices =
-                                          setNames(
-                                            c("GEAR_GROUP", "SPECIES", "SCHOOL_TYPE", "QUARTER"),
-                                            c("Gear group", "Species", "School type", "Quarter")
-                                          )
+                            UI_select_input_single("piemapCategory", label = "Categorise by:",
+                                                   choices =
+                                                     setNames(
+                                                       c("GEAR_GROUP", "SPECIES", "SCHOOL_TYPE", "QUARTER"),
+                                                       c("Gear group", "Species", "School type", "Quarter")
+                                                     )
+
                             )
                           )
                         ),
                         fluidRow(
                           column(
                             width = 12,
-                            selectInput("piemapMetric", label = "Metric:",
-                                        width = "100%",
-                                        choices =
-                                          setNames(
-                                            c("AC",           "AV",             "AVC"),
-                                            c("Accumulation", "Annual average", "Annual average (corrected)")
-                                          )
+                            UI_select_input_single("piemapMetric", label = "Metric:",
+                                                   choices =
+                                                     setNames(
+                                                       c("AC",           "AV",             "AVC"),
+                                                       c("Accumulation", "Annual average", "Annual average (corrected)")
+                                                     )
+
                             )
                           )
                         ),
                         fluidRow(
                           column(
                             width = 12,
-                            selectInput("pieCenter", label = "Pie position:",
-                                        width = "100%",
-                                        selected = "O",
-                                        choices =
-                                          setNames(
-                                            c("G",           "O"),
-                                            c("Grid center", "Grid centroid")
-                                          )
+                            UI_select_input_single("pieCenter", label = "Pie position:",
+                                                   choices =
+                                                     setNames(
+                                                       c("G",           "O"),
+                                                       c("Grid center", "Grid centroid")
+                                                     )
+                            )
+                          )
+                        ),
+                        fluidRow(
+                          column(
+                            width = 12,
+                            UI_select_input_single("catchScale", label = "Reference catch scale",
+                                                   choices = c("Calculated", "Fixed")
+                            ),
+                            conditionalPanel(
+                              condition = "input.catchScale == 'Fixed'",
+                              sliderInput("catch", "Reference catch [ log10(t) ]",
+                                          width = "100%",
+                                          min = 3, max = 6,
+                                          value = 5,
+                                          sep = "",
+                                          step  = .1
+                              )
                             )
                           )
                         ),
@@ -185,25 +201,6 @@ ui = function() {
                                         value = 3,
                                         sep = "",
                                         step  = .1
-                            )
-                          )
-                        ),
-                        fluidRow(
-                          column(
-                            width = 12,
-                            selectInput("catchScale", label = "Reference catch scale",
-                                        width = "100%",
-                                        choices = c("Calculated", "Fixed")
-                            ),
-                            conditionalPanel(
-                              condition = "input.catchScale == 'Fixed'",
-                              sliderInput("catch", "Reference catch [ log10(t) ]",
-                                          width = "100%",
-                                          min = 3, max = 6,
-                                          value = 5,
-                                          sep = "",
-                                          step  = .1
-                              )
                             )
                           )
                         )
@@ -223,11 +220,11 @@ ui = function() {
                       column(
                         width = 3,
                         fluidRow(
+                          style = "padding-top: 3.7em",
                           column(
                             width = 12,
-                            selectInput("heatmapArea", label = "Zoom on:",
-                                        width = "100%",
-                                        choices = ALL_ATLANTIC_AREAS
+                            UI_select_input_single("heatmapArea", label = "Zoom on:",
+                                                   choices = ALL_ATLANTIC_AREAS
                             )
                           )
                         ),
@@ -242,26 +239,24 @@ ui = function() {
                         fluidRow(
                           column(
                             width = 12,
-                            selectInput("scale", label = "Scale:",
-                                        width = "100%",
-                                        choices =
-                                          setNames(
-                                            c("LI",     "LN"),
-                                            c("Linear", "Logarithmic")
-                                          )
+                            UI_select_input_single("scale", label = "Scale:",
+                                                   choices =
+                                                     setNames(
+                                                       c("LI",     "LN"),
+                                                       c("Linear", "Logarithmic")
+                                                     )
                             )
                           ),
                         ),
                         fluidRow(
                           column(
                             width = 12,
-                            selectInput("heatmapMetric", label = "Metric:",
-                                        width = "100%",
-                                        choices =
-                                          setNames(
-                                            c("AC",           "AV",             "AVC"),
-                                            c("Accumulation", "Annual average", "Annual average (corrected)")
-                                          )
+                            UI_select_input_single("heatmapMetric", label = "Metric:",
+                                                   choices =
+                                                     setNames(
+                                                       c("AC",           "AV",             "AVC"),
+                                                       c("Accumulation", "Annual average", "Annual average (corrected)")
+                                                     )
                             )
                           )
                         )

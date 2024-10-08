@@ -201,20 +201,26 @@ INITIAL_NUM_ENTRIES  = 50
 
 GRIDS_SF = geometries_for(GRIDS_5x5_RAW_GEOMETRIES)
 
-UI_select_input = function(id, label, placeholder = "Select", choices) {
+UI_select_input = function(id, label, placeholder = "Select", choices, multiple = TRUE, autoselect_first_option = FALSE) {
   return(
     virtualSelectInput(
       inputId = id,
       label = label,
       placeholder = placeholder,
       width = "100%",
-      multiple = TRUE,
-      autoSelectFirstOption = FALSE,
+      multiple = multiple,
+      autoSelectFirstOption = autoselect_first_option,
       choices = choices,
       search = TRUE,
       showValueAsTags = FALSE,
       updateOn = "close"
     )
+  )
+}
+
+UI_select_input_single = function(id, label, choices) {
+  return(
+    UI_select_input(id, label, choices = choices, multiple = FALSE, autoselect_first_option = TRUE)
   )
 }
 
