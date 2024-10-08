@@ -24,31 +24,32 @@ Sys.setlocale(category = "LC_ALL", locale = "en_US.UTF-8")
 
 set_log_level(LOG_INFO)
 
+# Loads the static data needed by the application
+# These R data frames are produced via the 'initialize_data.R' script in the root folder of the project
+# and must be manually updated when needed (important note: for the update to happen, the script should
+# be run on a computer connected to the ICCAT LAN, in order to access all required databases)
+
 load("./META.RData")
 load("./CATDIS_Q.RData")
 load("./FAO_MAJOR_AREAS.RData")
 load("./ICCAT_SUBAREAS.RData")
+load("./GRID_TO_SAMPLING_AREA_MAPPINGS.RData")
+
+# Builds a single area overlay data table
 
 AREA_OVERLAYS = as.data.table(FAO_MAJOR_AREAS)
 AREA_OVERLAYS = rbind(AREA_OVERLAYS, as.data.table(ICCAT_SUBAREAS))
 
 INFO(paste0(nrow(CATDIS_Q), " rows loaded from CATDIS_Q"))
 
+# Default position of the piechart legend (to be used when the map is not zoomed on any subarea)
 DEFAULT_PIECHART_LEGEND_X = -90
 DEFAULT_PIECHART_LEGEND_Y = -25
-
-CATDIS_Q$QUARTER =
-  factor(
-    CATDIS_Q$QUARTER,
-    levels = c( 1,              2,               3,              4),
-    labels = c("Q1 (Jan-Mar)", "Q2 (Apr-Jun)", "Q3 (Jul-Sep)", "Q4 (Oct-Dec)"),
-    ordered = TRUE
-  )
 
 MIN_YEAR = min(CATDIS_Q$YEAR)
 MAX_YEAR = max(CATDIS_Q$YEAR)
 
-### BUILDING REFERENCE DATA FOR UI COMPONENTS
+### Builds all reference data required to populate the UI
 
 ALL_QUARTERS = setNames(c(1, 2, 3, 4),
                         as.character(sort(unique(CATDIS_Q$QUARTER))))
@@ -160,7 +161,15 @@ ALL_AREAS_OVERLAYS =
     "ICCAT subareas"  = ALL_ICCAT_SUBAREAS_OVERLAYS
   )
 
-### BUILDING CUSTOM REFERENCE COLORS
+### CUSTOM REFERENCE COLORS
+
+ATLANTIC_OCEAN_BORDER_COLOR    = "#00000044"
+OVERLAY_BORDER_COLOR           = "#000000CC"
+GRIDS_5X5_BORDER_COLOR         = "#88888822"
+GRIDS_5X5_HEATMAP_BORDER_COLOR = "#00000022"
+HEATMAP_GRADIENT_LOW_COLOR     = "#FFFFFFFF"
+HEATMAP_GRADIENT_HIGH_COLOR    = "#0000AAFF"
+
 
 SPECIES_COLORS =
   data.table(

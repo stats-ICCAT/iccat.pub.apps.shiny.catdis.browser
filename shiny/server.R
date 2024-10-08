@@ -29,6 +29,7 @@ server = function(input, output, session) {
 
     filtered = data
 
+    # Unnecessary...
     has_years = length(input$years) == 2
 
     if(has_years) {
@@ -70,7 +71,9 @@ server = function(input, output, session) {
     }
 
     if(!is.null(input$samplingAreas)) {
-      filtered = filtered[SAMPLING_AREA %in% input$samplingAreas]
+      filtered_grids = unique(GRID_TO_SAMPLING_AREA_MAPPINGS[SAMPLING_AREA_CODE %in% input$samplingAreas]$GRID_CODE)
+
+      filtered = filtered[GRID %in% filtered_grids]
     }
 
     end = Sys.time()
@@ -243,14 +246,14 @@ server = function(input, output, session) {
         geom_sf( # Adds the outline of the selected overlays (ICCAT area by default)
           data = base_geometries,
           fill = "transparent",
-          color = ifelse(is.null(overlays), "#00000044", "#000000CC")
+          color = ifelse(is.null(overlays), ATLANTIC_OCEAN_BORDER_COLOR, OVERLAY_BORDER_COLOR)
         ) +
 
         geom_sf( # Fixed layer with all 5x5 grids shown in very light, transparent gray
           data = geometries_for(GRIDS_5x5_RAW_GEOMETRIES,
                                 target_crs = iccat.pub.maps::CRS_EQUIDISTANT),
           fill = "transparent",
-          color = "#88888822"
+          color = GRIDS_5X5_BORDER_COLOR
         ) +
 
         geom_scatterpie( # The actual scatter pie elements...
@@ -376,13 +379,13 @@ server = function(input, output, session) {
         geom_sf( # Adds the outline of the selected overlays (ICCAT area by default)
           data = base_geometries,
           fill = "transparent",
-          color = ifelse(is.null(overlays), "#00000044", "#000000CC")
+          color = ifelse(is.null(overlays), ATLANTIC_OCEAN_BORDER_COLOR, OVERLAY_BORDER_COLOR)
         ) +
 
         geom_sf( # Fixed layer with all 5x5 grids shown in very light, transparent gray
           data = geometries_for(GRIDS_5x5_RAW_GEOMETRIES, target_crs = CRS_EQUIDISTANT),
           fill = "transparent",
-          color = "#88888822"
+          color = GRIDS_5X5_BORDER_COLOR
         ) +
 
         geom_sf( # The actual heatmap elements, as a series of 5x5 grids with different color intensity (proportional to their catch)
@@ -391,13 +394,13 @@ server = function(input, output, session) {
             geometry = GEOMETRY_WKT,
             fill = CATCH
           ),
-          color = "#00000022",
+          color = GRIDS_5X5_HEATMAP_BORDER_COLOR,
           alpha = .6
         ) +
 
         scale_fill_gradient( # The gradient scale
-          low   = "#FFFFFF",
-          high  = "#0000AA",
+          low   = HEATMAP_GRADIENT_LOW_COLOR,
+          high  = HEATMAP_GRADIENT_HIGH_COLOR,
           guide = "legend",
           labels = scales::comma
         ) +
