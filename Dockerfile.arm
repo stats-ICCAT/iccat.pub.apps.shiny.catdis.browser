@@ -9,27 +9,61 @@ RUN apt-get -y install apt-utils
 
 # Required to build R package dependencies
 
-RUN apt-get -y -f install libharfbuzz-dev \
-                          libfreetype-dev \
-                          libfribidi-dev \
-                          libgdal-dev \
-                          libgit2-dev \
-                          libjpeg-dev \
-                          libpng-dev \
-                          libtiff5-dev \
-                          libudunits2-dev
+RUN apt-get -y -f install \
+    libfreetype-dev \
+    libfribidi-dev \
+    libgdal-dev \
+    libgit2-dev \
+    libharfbuzz-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libudunits2-dev
 
 WORKDIR /
 
 # Installs all required R packages (and their dependencies) starting from those hat are available on the remote repo
 # and then from the locally available libs (for the time being)
 
-RUN R -e "install.packages(c('bslib', 'cachem', 'colorspace', 'commonmark', 'cowplot', 'crayon', 'data.table', \
-                             'devtools', 'digest', 'dplyr', 'DT', 'fastmap', 'fontawesome', 'fs', 'ggnewscale', \
-                             'ggthemes', 'glue', 'htmltools', 'httpuv', 'jsonlite', 'later', 'mapdata', \
-                             'mapplots', 'maps', 'openxlsx', 'png', 'Rcpp', 'remotes', 'sass', 'scatterpie', 'sf', \
-                             'shiny', 'shinycssloaders', 'shinyjs', 'shinyWidgets', 'sourcetools', 'stringi', \
-                             'stringr', 'stringr', 'units'), repos = 'http://cran.r-project.org')"
+RUN R -e "install.packages(c('bslib', \
+                             'cachem', \
+                             'colorspace', \
+                             'commonmark', \
+                             'cowplot', \
+                             'crayon', \
+                             'data.table', \
+                             'devtools', \
+                             'digest', \
+                             'dplyr', \
+                             'DT', \
+                             'fastmap', \
+                             'fontawesome', \
+                             'fs', \
+                             'ggnewscale', \
+                             'ggthemes', \
+                             'glue', \
+                             'htmltools', \
+                             'httpuv', \
+                             'jsonlite', \
+                             'later', \
+                             'mapdata', \
+                             'mapplots', \
+                             'maps', \
+                             'openxlsx', \
+                             'png', \
+                             'Rcpp', \
+                             'remotes', \
+                             'sass', \
+                             'scatterpie', \
+                             'sf', \
+                             'shiny', \
+                             'shinycssloaders', \
+                             'shinyjs', \
+                             'shinyWidgets', \
+                             'sourcetools', \
+                             'stringi', \
+                             'stringr', \
+                             'units'), repos = 'http://cran.r-project.org')"
 
 # Sets the working directory to the shiny-server root folder
 WORKDIR /srv/shiny-server

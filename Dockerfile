@@ -4,9 +4,9 @@ WORKDIR /
 
 RUN apt-get update -qq
 RUN apt-get -y -f install \
-    libudunits2-dev \
+    libgdal-dev \
     libproj-dev \
-    libgdal-dev
+    libudunits2-dev
 
 # Installs all required R packages (and their dependencies) starting from those hat are available on the remote repo
 # and then from the locally available libs (for the time being)
