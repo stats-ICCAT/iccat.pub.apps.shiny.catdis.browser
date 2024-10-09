@@ -168,8 +168,8 @@ ui = function() {
                             UI_select_input_single("pieCenter", label = "Pie position:",
                                                    choices =
                                                      setNames(
-                                                       c("G",           "O"),
-                                                       c("Grid center", "Grid centroid")
+                                                       c("O",             "G"),
+                                                       c("Grid centroid", "Grid center")
                                                      )
                             )
                           )
@@ -179,16 +179,6 @@ ui = function() {
                             width = 12,
                             UI_select_input_single("catchScale", label = "Reference catch scale",
                                                    choices = c("Calculated", "Fixed")
-                            ),
-                            conditionalPanel(
-                              condition = "input.catchScale == 'Fixed'",
-                              sliderInput("catch", "Reference catch [ log10(t) ]",
-                                          width = "100%",
-                                          min = 3, max = 6,
-                                          value = 5,
-                                          sep = "",
-                                          step  = .1
-                              )
                             )
                           )
                         ),
@@ -201,6 +191,16 @@ ui = function() {
                                         value = 3,
                                         sep = "",
                                         step  = .1
+                            ),
+                            conditionalPanel(
+                              condition = "input.catchScale == 'Fixed'",
+                              sliderInput("catch", "Reference catch [ log10(t) ]",
+                                          width = "100%",
+                                          min = 3, max = 6,
+                                          value = 5,
+                                          sep = "",
+                                          step  = .1
+                              )
                             )
                           )
                         )
