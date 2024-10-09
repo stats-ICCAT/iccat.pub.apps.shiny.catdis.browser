@@ -27,11 +27,9 @@ WORKDIR /
 RUN R -e "install.packages(c('bslib', 'cachem', 'colorspace', 'commonmark', 'cowplot', 'crayon', 'data.table', \
                              'devtools', 'digest', 'dplyr', 'DT', 'fastmap', 'fontawesome', 'fs', 'ggnewscale', \
                              'ggthemes', 'glue', 'htmltools', 'httpuv', 'jsonlite', 'later', 'mapdata', \
-                             'mapplots', 'maps', 'openxlsx', 'Rcpp', 'remotes', 'sass', 'scatterpie', 'sf', \
+                             'mapplots', 'maps', 'openxlsx', 'png', 'Rcpp', 'remotes', 'sass', 'scatterpie', 'sf', \
                              'shiny', 'shinycssloaders', 'shinyjs', 'shinyWidgets', 'sourcetools', 'stringi', \
                              'stringr', 'stringr', 'units'), repos = 'http://cran.r-project.org')"
-
-RUN R -e "install.packages(c('png'), repos = 'http://cran.r-project.org')"
 
 # Sets the working directory to the shiny-server root folder
 WORKDIR /srv/shiny-server

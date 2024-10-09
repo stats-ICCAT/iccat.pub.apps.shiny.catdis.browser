@@ -23,6 +23,7 @@ RUN install2.r --error --skipinstalled \
     mapplots \
     maps \
     openxlsx \
+    png \
     scatterpie \
     sf \
     shiny \
