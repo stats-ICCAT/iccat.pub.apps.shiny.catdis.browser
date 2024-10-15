@@ -96,9 +96,9 @@ CATDIS_Y =
 
 # Creates an updated version of the metadata
 
-META = list(LAST_UPDATE = "2024-09-30",
-            FILENAME_Y = "ICCAT_CATDIS_20240930_Y.csv.gz",
-            FILENAME_Q = "ICCAT_CATDIS_20240930_Q.csv.gz")
+META = list(LAST_UPDATE = "2024-10-15",
+            FILENAME_Y = "ICCAT_CATDIS_20241015_Y.csv.gz",
+            FILENAME_Q = "ICCAT_CATDIS_20241015_Q.csv.gz")
 
 # Saves the two CATDIS datasets (quarterly and annual) and the metadata themselves as R data frames
 
