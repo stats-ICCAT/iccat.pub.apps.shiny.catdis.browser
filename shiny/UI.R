@@ -12,7 +12,7 @@ ui = function() {
         conditionalPanel(
           condition = "$('html').hasClass('shiny-busy')",
           tags$div(id = "glasspane",
-                   tags$div(class = "loading", "Filtering data and preparing output...")
+            tags$div(class = "loading", "Filtering data and preparing output...")
           )
         ),
         tags$div(
