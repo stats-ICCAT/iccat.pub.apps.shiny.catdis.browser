@@ -152,12 +152,10 @@ ui = function() {
                           column(width = 12,
                             UI_select_input_single("piemapCategory",
                               label = "Categorise by:",
-                              choices =
-                                setNames(
-                                  c("GEAR_GROUP", "SPECIES", "SCHOOL_TYPE", "QUARTER"),
-                                  c("Gear group", "Species", "School type", "Quarter")
-                                )
-
+                              choices = setNames(
+                                c("GEAR_GROUP", "SPECIES", "SCHOOL_TYPE", "QUARTER"),
+                                c("Gear group", "Species", "School type", "Quarter")
+                              )
                             )
                           )
                         ),
@@ -165,11 +163,10 @@ ui = function() {
                           column(width = 12,
                             UI_select_input_single("piemapMetric",
                               label = "Metric:",
-                              choices =
-                                setNames(
-                                  c("AC",           "AV",             "AVC"),
-                                  c("Accumulation", "Annual average", "Annual average (corrected)")
-                                )
+                              choices = setNames(
+                                c("AC",           "AV",             "AVC"),
+                                c("Accumulation", "Annual average", "Annual average (corrected)")
+                              )
                             )
                           )
                         ),
@@ -177,11 +174,10 @@ ui = function() {
                           column(width = 12,
                             UI_select_input_single("pieCenter",
                               label = "Pie position:",
-                              choices =
-                                setNames(
-                                  c("O",             "G"),
-                                  c("Grid centroid", "Grid center")
-                                )
+                              choices = setNames(
+                                c("O",             "G"),
+                                c("Grid centroid", "Grid center")
+                              )
                             )
                           )
                         ),
@@ -265,11 +261,10 @@ ui = function() {
                             UI_select_input_single(
                               "heatmapMetric",
                               label = "Metric:",
-                              choices =
-                                setNames(
-                                  c("AC",           "AV",             "AVC"),
-                                  c("Accumulation", "Annual average", "Annual average (corrected)")
-                                )
+                              choices = setNames(
+                                c("AC",           "AV",             "AVC"),
+                                c("Accumulation", "Annual average", "Annual average (corrected)")
+                              )
                             )
                           )
                         )
